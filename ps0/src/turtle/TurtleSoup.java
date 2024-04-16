@@ -15,12 +15,8 @@ public class TurtleSoup {
      * @param sideLength length of each side
      */
     public static void drawSquare(Turtle turtle, int sideLength) {
-        final int sides = 4;
-        final double angle = 360.0 / sides;
-        for(int i = 0; i < sides; i++){
-            turtle.forward(sideLength);
-            turtle.turn(angle);
-        }
+        int side = 4;
+        drawRegularPolygon(turtle, side, sideLength);
     }
 
     /**
@@ -139,8 +135,8 @@ public class TurtleSoup {
     public static void main(String args[]) {
         DrawableTurtle turtle = new DrawableTurtle();
 
-//        drawSquare(turtle, 40);
-        drawRegularPolygon(turtle, 4, 50);
+        drawSquare(turtle, 40);
+//        drawRegularPolygon(turtle, 4, 50);
         // draw the window
         turtle.draw();
     }
