@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class TurtleSoup {
+    final static double halfCircle = 180.0;
     /**
      * Draw a square.
      * 
@@ -15,10 +16,10 @@ public class TurtleSoup {
      */
     public static void drawSquare(Turtle turtle, int sideLength) {
         final int sides = 4;
-        final double turn = 360.0 / sides;
+        final double angle = 360.0 / sides;
         for(int i = 0; i < sides; i++){
             turtle.forward(sideLength);
-            turtle.turn(turn);
+            turtle.turn(angle);
         }
     }
 
@@ -32,7 +33,11 @@ public class TurtleSoup {
      * @return angle in degrees, where 0 <= angle < 360
      */
     public static double calculateRegularPolygonAngle(int sides) {
-        throw new RuntimeException("implement me!");
+        if(sides < 3){
+            throw new IllegalArgumentException("A polygon must have at least three sides");
+        }
+
+        return (sides - 2) * halfCircle / sides; // Polygon inner angle formula.
     }
 
     /**
@@ -46,7 +51,10 @@ public class TurtleSoup {
      * @return the integer number of sides
      */
     public static int calculatePolygonSidesFromAngle(double angle) {
-        throw new RuntimeException("implement me!");
+        if(angle <= 0 || angle >= 180.0){
+            throw new IllegalArgumentException("Angle must be between 0 and 180.");
+        }
+        return (int)Math.round(2*halfCircle/(halfCircle-angle));
     }
 
     /**
@@ -59,7 +67,12 @@ public class TurtleSoup {
      * @param sideLength length of each side
      */
     public static void drawRegularPolygon(Turtle turtle, int sides, int sideLength) {
-        throw new RuntimeException("implement me!");
+        double interiorAngle = calculateRegularPolygonAngle(sides);
+        double turn = halfCircle - interiorAngle;
+        for(int i = 0; i < sides; i++){
+            turtle.forward(sideLength);
+            turtle.turn(turn);
+        }
     }
 
     /**
@@ -126,8 +139,8 @@ public class TurtleSoup {
     public static void main(String args[]) {
         DrawableTurtle turtle = new DrawableTurtle();
 
-        drawSquare(turtle, 40);
-
+//        drawSquare(turtle, 40);
+        drawRegularPolygon(turtle, 4, 50);
         // draw the window
         turtle.draw();
     }
