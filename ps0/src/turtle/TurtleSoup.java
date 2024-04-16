@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class TurtleSoup {
-
     /**
      * Draw a square.
      * 
@@ -15,7 +14,12 @@ public class TurtleSoup {
      * @param sideLength length of each side
      */
     public static void drawSquare(Turtle turtle, int sideLength) {
-        throw new RuntimeException("implement me!");
+        final int sides = 4;
+        final double turn = 360.0 / sides;
+        for(int i = 0; i < sides; i++){
+            turtle.forward(sideLength);
+            turtle.turn(turn);
+        }
     }
 
     /**
