@@ -92,7 +92,13 @@ public class TurtleSoup {
      */
     public static double calculateHeadingToPoint(double currentHeading, int currentX, int currentY,
                                                  int targetX, int targetY) {
-        throw new RuntimeException("implement me!");
+        double diffX = targetX - currentX;
+        double diffY = targetY - currentY;
+        if(diffX == 0 && diffY == 0){return 0;} // No moving is needed.
+        double angleXAxis = Math.atan2(diffY, diffX) * halfCircle / Math.PI; // The angle of the position vector for Cartesian X-axis.
+        double angleNorth = convertXAisAngleToNorthAngle(angleXAxis);
+        double angleDiff = angleNorth - currentHeading;
+        return angleDiff < 0 ? 2*halfCircle - Math.abs(angleDiff) : angleDiff;
     }
 
     /**
@@ -123,6 +129,20 @@ public class TurtleSoup {
      */
     public static void drawPersonalArt(Turtle turtle) {
         throw new RuntimeException("implement me!");
+    }
+
+    /**
+     * Convert the angle to positive X-axis to the angle as clockwise to the North.
+     *
+     * @param angleXAxis the angle to positive X-axis, which belongs to (-180, 180].
+     * @return angleNorth the angle to the North, which must be 0 <= angleNorth < 360.0
+     */
+    public static double convertXAisAngleToNorthAngle(double angleXAxis){
+        assert angleXAxis <= 180 &&  angleXAxis > -180: "angleXAxis must be in (-180, 180].";
+        if(angleXAxis > 90 && angleXAxis <= 180)
+            return 2.5*halfCircle - angleXAxis;
+        else
+            return 90-angleXAxis;
     }
 
     /**
