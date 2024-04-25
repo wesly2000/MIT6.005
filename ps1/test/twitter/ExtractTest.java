@@ -29,7 +29,35 @@ public class ExtractTest {
     public void testAssertionsEnabled() {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
-    
+
+    /*
+     * Testing strategy:
+     *
+     * Partition for Extract.getTimespan(tweets) -> result:
+     *
+     * tweets.size: 0, 1, >1,
+     * when tweets.size is 0, an exception is expected.
+     * result.start = result.end, result.start < result.end
+     *
+     */
+
+    // This test covers tweets.size=0, throwing an exception.
+    @Test
+    public void testGetTimespanEmptyTweets() {
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> Extract.getTimespan(Arrays.asList())
+        );
+
+        assertEquals("tweets is empty", e.getMessage());
+    }
+    // This test covers tweets.size=1, result.start = result.end
+    @Test
+    public void testGetOneTweets(){
+        Timespan timespan = Extract.getTimespan(Arrays.asList(tweet1));
+        assertEquals("expected same start and end", timespan.getEnd(), timespan.getStart());
+    }
+    // This test covers tweets.size > 1, result.start < result.end
     @Test
     public void testGetTimespanTwoTweets() {
         Timespan timespan = Extract.getTimespan(Arrays.asList(tweet1, tweet2));
@@ -58,6 +86,5 @@ public class ExtractTest {
      * them in a different class. If you only need them in this test class, then
      * keep them in this test class.
      */
-
 
 }

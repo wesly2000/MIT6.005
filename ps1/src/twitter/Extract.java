@@ -25,9 +25,9 @@ public class Extract {
      *         every tweet in the list.
      */
     public static Timespan getTimespan(List<Tweet> tweets) {
-        if (tweets == null || tweets.size() == 0) {
-            throw new IllegalArgumentException("tweets is null or empty");
-        }
+        if (tweets == null) throw new NullPointerException("tweets is null");
+        if (tweets.isEmpty()) throw new IllegalArgumentException("tweets is empty");
+
         Instant start = tweets.get(0).getTimestamp();
         Instant end = tweets.get(0).getTimestamp();
         for (Tweet tweet : tweets) {
