@@ -4,8 +4,12 @@
 package twitter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * Extract consists of methods that extract information from a list of tweets.
@@ -57,7 +61,35 @@ public class Extract {
      *         include a username at most once.
      */
     public static Set<String> getMentionedUsers(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        Set<String> mentionedUsers = new HashSet<String>();
+        // Use a lower case set to filter duplicates with the same lower-case form.
+        Set<String> mentionedUsersLowerCase = new HashSet<String>();
+        for (Tweet tweet : tweets) {
+            getMentionedUserOneTweet(tweet, mentionedUsers, mentionedUsersLowerCase);
+        }
+        return mentionedUsers;
+    }
+
+    /**
+     * Find all the usernames in a tweet and add them to the username sets.
+     *
+     * @param tweet
+     * @param mentionedUsers
+     * @param mentionedUsersLowerCase the lower-cased version of mentionedUsers,
+     *                                used to filter duplicated usernames.
+     */
+    public static void getMentionedUserOneTweet(Tweet tweet, Set<String> mentionedUsers, Set<String> mentionedUsersLowerCase){
+        String regex = "(?<=\\s|^)@[-\\w]+";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(tweet.getText());
+        String mentionedUser = null;
+        while (m.find()) {
+            mentionedUser = m.group();
+            if (! mentionedUsersLowerCase.contains(mentionedUser.toLowerCase())) {
+                mentionedUsers.add(mentionedUser);
+                mentionedUsersLowerCase.add(mentionedUser.toLowerCase());
+            }
+        }
     }
 
 }

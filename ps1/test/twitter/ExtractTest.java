@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -21,9 +22,13 @@ public class ExtractTest {
     
     private static final Instant d1 = Instant.parse("2016-02-17T10:00:00Z");
     private static final Instant d2 = Instant.parse("2016-02-17T11:00:00Z");
+    private static final Instant d3 = Instant.parse("2016-02-17T12:00:00Z");
+    private static final Instant d4 = Instant.parse("2016-02-17T13:00:00Z");
     
     private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
     private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
+    private static final Tweet tweet3 = new Tweet(3, "aba", "Hi, @-ONE123, I'm @two666, is xYz@one123 yours email? I like @ symbol.", d3);
+    private static final Tweet tweet4 = new Tweet(4, "xyz", "I'm @-one123, 456@-one123 is my email, not Xyz@one123.", d4);
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
@@ -65,12 +70,31 @@ public class ExtractTest {
         assertEquals("expected start", d1, timespan.getStart());
         assertEquals("expected end", d2, timespan.getEnd());
     }
-    
+
+    //
+    // Testing strategy:
+    //
+    // Partition for getMentionedUsers(tweets) -> result:
+    // tweets.size: 0, 1, >1
+    // tweets whose text contains abc@xyz, @-abc, @, @123abc
+    // tweets whose text contains duplicates with the same lower-case form.
+    // result.size: 0, >0
+    //
+
+    // This test covers tweets.size=0, result.size=0
     @Test
     public void testGetMentionedUsersNoMention() {
         Set<String> mentionedUsers = Extract.getMentionedUsers(Arrays.asList(tweet1));
         
         assertTrue("expected empty set", mentionedUsers.isEmpty());
+    }
+    // This test covers tweets.size>0, result.size>0
+    // tweets have duplicates with the same lower-case form
+    // and patterns like abc@xyz, @-abc, @, @123abc.
+    @Test
+    public void testGetMentionedUsersMention(){
+        Set<String> mentionedUsers = new HashSet<>(Arrays.asList("@-ONE123", "@two666"));
+        assertEquals("expected the same mentioned users", mentionedUsers, Extract.getMentionedUsers(Arrays.asList(tweet1, tweet2, tweet3, tweet4)));
     }
 
     /*
