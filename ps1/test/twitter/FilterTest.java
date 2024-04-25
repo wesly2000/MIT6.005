@@ -21,21 +21,61 @@ public class FilterTest {
     
     private static final Instant d1 = Instant.parse("2016-02-17T10:00:00Z");
     private static final Instant d2 = Instant.parse("2016-02-17T11:00:00Z");
+    private static final Instant d3 = Instant.parse("2016-02-17T12:00:00Z");
+    private static final Instant d4 = Instant.parse("2016-03-17T11:00:00Z");
     
     private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
     private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
+    private static final Tweet tweet3 = new Tweet(3, "bbitdiddle", "rivest talk in 30 minutes #hype", d3);
+    private static final Tweet tweet4 = new Tweet(4, "BbitdiDDle", "rivest talk in 30 minutes #hype", d3);
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
-    
+
+    //
+    // Testing strategy for writtenBy(tweets, username) -> result
+    //
+    // tweets.size: 0, >0
+    // username: already exists in tweets or not, duplicates in lower-case form
+    // result.size: 0, 1, >1
+    //
+
+    // Test covers tweets.size=0, result.size=0
+    @Test
+    public void testWrittenByEmptyTweetsEmptyResult(){
+        List<Tweet> writtenBy = Filter.writtenBy(Arrays.asList(), "alyssa");
+
+        assertTrue("expected empty list", writtenBy.isEmpty());
+    }
+
+    // Test covers tweets.size>0, existing username, result.size=1
     @Test
     public void testWrittenByMultipleTweetsSingleResult() {
         List<Tweet> writtenBy = Filter.writtenBy(Arrays.asList(tweet1, tweet2), "alyssa");
         
         assertEquals("expected singleton list", 1, writtenBy.size());
         assertTrue("expected list to contain tweet", writtenBy.contains(tweet1));
+    }
+
+    // Test covers tweets.size>1, username exists, result.size>1
+    @Test
+    public void testWrittenByMultipleTweetsMultipleResults() {
+        List<Tweet> writtenBy = Filter.writtenBy(Arrays.asList(tweet1, tweet2, tweet3, tweet4), "BbitdiDDle");
+
+        assertEquals("expected 3 tweets list", 3, writtenBy.size());
+        assertTrue("expected list to contain tweet 2", writtenBy.contains(tweet2));
+        assertTrue("expected list to contain tweet 3", writtenBy.contains(tweet3));
+        assertTrue("expected list to contain tweet 4", writtenBy.contains(tweet4));
+    }
+
+    // Test covers tweets.size>1, username doesn't exist, result.size=0
+    @Test
+    public void testWrittenByMultipleTweetsEmptyResults() {
+        List<Tweet> writtenBy = Filter.writtenBy(Arrays.asList(tweet1, tweet2), "xyz");
+
+        assertTrue("expected empty list", writtenBy.isEmpty());
     }
     
     @Test
