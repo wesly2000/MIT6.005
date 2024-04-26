@@ -3,6 +3,7 @@
  */
 package twitter;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,16 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        List<Tweet> inTimespanTweets = new ArrayList<>();
+        Instant currentTs;
+        for(Tweet tweet : tweets) {
+            currentTs = tweet.getTimestamp();
+            // The timestamp of a tweet should lie in the timespan inclusively.
+            if(! currentTs.isAfter(timespan.getEnd()) && !currentTs.isBefore(timespan.getStart())) {
+                inTimespanTweets.add(tweet);
+            }
+        }
+        return inTimespanTweets;
     }
 
     /**
