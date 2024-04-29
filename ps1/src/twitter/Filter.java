@@ -6,6 +6,8 @@ package twitter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Filter consists of methods that filter a list of tweets for those matching a
@@ -77,7 +79,20 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        String regex;
+        Pattern pattern;
+        List<Tweet> containedTweets = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            for (String word : words) {
+                regex = "\\b" + word + "\\b";
+                pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+                if (pattern.matcher(tweet.getText()).find()) {
+                   containedTweets.add(tweet);
+                   break; // Avoid duplicates
+                }
+            }
+        }
+        return containedTweets;
     }
 
 }

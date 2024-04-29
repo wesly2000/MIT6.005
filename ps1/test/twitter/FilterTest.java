@@ -28,6 +28,9 @@ public class FilterTest {
     private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
     private static final Tweet tweet3 = new Tweet(3, "bbitdiddle", "rivest talk in 30 minutes #hype", d3);
     private static final Tweet tweet4 = new Tweet(4, "BbitdiDDle", "rivest talk in 30 minutes #hype", d4);
+    private static final Tweet tweet5 = new Tweet(5, "alyssa", "SOFTWARE construction is INTERESting! A TALK", d1);
+    private static final Tweet tweet6 = new Tweet(6, "bbitdiddle", "Is it good to write Java? Talking about C.", d2);
+
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
@@ -119,7 +122,16 @@ public class FilterTest {
         assertTrue("expected list to contain tweets", inTimespan.containsAll(Arrays.asList(tweet1, tweet2, tweet3)));
         assertEquals("expected same order", 1, inTimespan.indexOf(tweet2));
     }
-    
+
+    //
+    // Testing strategy for containing(tweets, words) -> result:
+    //
+    // words: including duplicates or not, case-insensitive or not
+    // words.size: 0, 1, >1
+    // result.size: 0, 1, >1
+    //
+
+    // Test covers no duplicates, words.size=1, result.size>1
     @Test
     public void testContaining() {
         List<Tweet> containing = Filter.containing(Arrays.asList(tweet1, tweet2), Arrays.asList("talk"));
@@ -127,6 +139,34 @@ public class FilterTest {
         assertFalse("expected non-empty list", containing.isEmpty());
         assertTrue("expected list to contain tweets", containing.containsAll(Arrays.asList(tweet1, tweet2)));
         assertEquals("expected same order", 0, containing.indexOf(tweet1));
+    }
+
+    // Test covers no duplicates(also test case-sensitivity), words.size>1, result.size>1
+    @Test
+    public void testContainingNoDuplicatesCaseMultipleWordsMultipleResults() {
+        List<Tweet> containing = Filter.containing(Arrays.asList(tweet1, tweet2, tweet5, tweet6), Arrays.asList("Talk", "software", "Construction"));
+
+        assertFalse("expected non-empty list", containing.isEmpty());
+        assertTrue("expected list to contain tweets", containing.containsAll(Arrays.asList(tweet1, tweet2, tweet5)));
+        assertEquals("expected same order", 2, containing.indexOf(tweet5));
+    }
+
+    // Test covers duplicates(also test case-sensitivity), words.size>1, result.size>1
+    @Test
+    public void testContainingDuplicatesCaseMultipleWordsMultipleResults() {
+        List<Tweet> containing = Filter.containing(Arrays.asList(tweet1, tweet2, tweet5, tweet6), Arrays.asList("Is", "is"));
+
+        assertFalse("expected non-empty list", containing.isEmpty());
+        assertTrue("expected list to contain tweets", containing.containsAll(Arrays.asList(tweet1, tweet5, tweet6)));
+        assertEquals("expected same order", 1, containing.indexOf(tweet5));
+    }
+
+    // Test covers no duplicates, words.size>1, result.size=0
+    @Test
+    public void testContainingNoDuplicatesCaseSingleWordsNoResults() {
+        List<Tweet> containing = Filter.containing(Arrays.asList(tweet1, tweet2, tweet5, tweet6), Arrays.asList("Python"));
+
+        assertTrue("expected non-empty list", containing.isEmpty());
     }
 
     /*
@@ -142,5 +182,7 @@ public class FilterTest {
      * different class. If you only need them in this test class, then keep them
      * in this test class.
      */
+
+
 
 }
