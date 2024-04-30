@@ -88,7 +88,7 @@ public class Extract {
 
         String mentionedUser = "";
         while (m.find()) {
-            mentionedUser = m.group();
+            mentionedUser = m.group().substring(1); // Remove the '@' in user mention.
             if (! mentionedUsersLowerCase.contains(mentionedUser.toLowerCase())) {
                 mentionedUsers.add(mentionedUser);
                 mentionedUsersLowerCase.add(mentionedUser.toLowerCase());

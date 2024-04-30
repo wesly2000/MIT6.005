@@ -79,7 +79,7 @@ public class MyExtractTest {
     @Test
     public void testGetMentionedUserOneTweetMultipleResult(){
         assertEquals("expect 3 elements in result", 3, Extract.getMentionedUserOneTweet(tweet1).size());
-        assertTrue("expect \"@-one123\", \"@Alice123\", \"@Mime\"", Extract.getMentionedUserOneTweet(tweet1).containsAll(Arrays.asList("@-one123", "@Alice123", "@Mime")));
+        assertTrue("expect \"-one123\", \"Alice123\", \"Mime\"", Extract.getMentionedUserOneTweet(tweet1).containsAll(Arrays.asList("-one123", "Alice123", "Mime")));
     }
 
     // This test covers result.size=0

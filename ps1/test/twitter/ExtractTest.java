@@ -93,7 +93,7 @@ public class ExtractTest {
     // and patterns like abc@xyz, @-abc, @, @123abc.
     @Test
     public void testGetMentionedUsersMention(){
-        Set<String> mentionedUsers = new HashSet<>(Arrays.asList("@-ONE123", "@two666"));
+        Set<String> mentionedUsers = new HashSet<>(Arrays.asList("-ONE123", "two666"));
         assertEquals("expected the same mentioned users", mentionedUsers, Extract.getMentionedUsers(Arrays.asList(tweet1, tweet2, tweet3, tweet4)));
     }
 
