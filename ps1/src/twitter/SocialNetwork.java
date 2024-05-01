@@ -71,7 +71,7 @@ public class SocialNetwork {
         }
 
         List<String> influencers = Utils.mapKeySort(followerCount);
-
+        Collections.reverse(influencers);
         return influencers;
     }
 
@@ -87,11 +87,13 @@ public class SocialNetwork {
         Set<String> followers = new HashSet<>();
         followsGraph.forEach(
                 (user, mentionedUsers) -> {
-                    if (mentionedUsers.contains(username)) {}
+                    if(! user.equals(username)) { // Self-mention is not counted
+                        if (mentionedUsers.contains(username)) {
+                            followers.add(user);
+                        }
+                    }
                 }
         );
-
         return followers;
     }
-
 }

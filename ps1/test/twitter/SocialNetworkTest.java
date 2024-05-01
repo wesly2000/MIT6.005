@@ -63,13 +63,45 @@ public class SocialNetworkTest {
 
         assertEquals("expect equal following users", followsGraph, trueGraph);
     }
-    
+
+    //
+    // Testing strategy for influencers(followsGraph) -> result:
+    //
+    // followsGraph.size: 0, 1, >1
+    // result.size: 0, 1, >1
+    //
+
+    // This test covers followGraph.size=0, result.size=0
     @Test
     public void testInfluencersEmpty() {
         Map<String, Set<String>> followsGraph = new HashMap<>();
         List<String> influencers = SocialNetwork.influencers(followsGraph);
         
         assertTrue("expected empty list", influencers.isEmpty());
+    }
+
+    // This test covers followGraph.size=1, result.size=1
+    @Test
+    public void testInfluencersSingleResult(){
+        Map<String, Set<String>> followsGraph = new HashMap<>();
+        followsGraph.put("alyssa", new HashSet<>(Arrays.asList("alyssa")));
+
+        assertEquals("expect list [\"alyssa\"]", Arrays.asList("alyssa"), SocialNetwork.influencers(followsGraph));
+    }
+
+    // This test covers followGraph.size>1, result.size>1
+    @Test
+    public void testInfluencersMultipleResults(){
+        Map<String, Set<String>> followsGraph = new HashMap<>();
+        followsGraph.put("alyssa", new HashSet<>(Arrays.asList("alyssa", "cindy")));
+        followsGraph.put("bob", new HashSet<>(Arrays.asList("alyssa", "cindy")));
+        followsGraph.put("cindy", new HashSet<>(Arrays.asList("bob", "eve")));
+        followsGraph.put("dave", new HashSet<>(Arrays.asList("alyssa", "eve")));
+        followsGraph.put("eve", new HashSet<>());
+
+        assertEquals("expect list [\"cindy\", \"eve\", \"alyssa\", \"bob\", \"dave\"]",
+                Arrays.asList("cindy", "eve", "alyssa", "bob", "dave"),
+                SocialNetwork.influencers(followsGraph));
     }
 
     /*
