@@ -3,9 +3,8 @@
  */
 package twitter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * SocialNetwork provides methods that operate on a social network.
@@ -41,7 +40,19 @@ public class SocialNetwork {
      *         either authors or @-mentions in the list of tweets.
      */
     public static Map<String, Set<String>> guessFollowsGraph(List<Tweet> tweets) {
-        throw new RuntimeException("not implemented");
+        // We use the implementation that if a user doesn't follow anyone, its following set
+        // is empty, i.e., Map[A].isEmpty() is true.
+
+        // We only implement the following relationship that if an author mentioned
+        // someone in its tweet, the author follows him/her.
+        Map<String, Set<String>> graph = new HashMap<>();
+        Set<String> userOneTweet = new HashSet<>();
+        for (Tweet tweet : tweets) {
+            // We make all the usernames to their lower-cased form.
+            userOneTweet = Utils.lowerCaseSet(Extract.getMentionedUserOneTweet(tweet));
+            graph.merge(tweet.getAuthor().toLowerCase(), userOneTweet, Utils::caseInsensitiveSetUnion);
+        }
+        return graph;
     }
 
     /**
@@ -54,7 +65,33 @@ public class SocialNetwork {
      *         descending order of follower count.
      */
     public static List<String> influencers(Map<String, Set<String>> followsGraph) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> followerCount = new HashMap<>();
+        for(String username : followsGraph.keySet()) {
+            followerCount.put(username, followersOfOneUser(followsGraph, username).size());
+        }
+
+        List<String> influencers = Utils.mapKeySort(followerCount);
+
+        return influencers;
+    }
+
+    /**
+     * Find all the followers of a given user in a social network
+     *
+     * @param followsGraph a social network (as defined above)
+     * @param username name of the user we find its distinct followers
+     * @return a list of all distinct followers of the user
+     *
+     */
+    public static Set<String> followersOfOneUser(Map<String, Set<String>> followsGraph, String username) {
+        Set<String> followers = new HashSet<>();
+        followsGraph.forEach(
+                (user, mentionedUsers) -> {
+                    if (mentionedUsers.contains(username)) {}
+                }
+        );
+
+        return followers;
     }
 
 }

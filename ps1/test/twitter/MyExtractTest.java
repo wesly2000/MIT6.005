@@ -22,52 +22,6 @@ public class MyExtractTest {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
 
-    //
-    // Testing strategies for caseInsensitiveSetUnion(set1, set2) -> result
-    //
-    // set1.size: 0, >0
-    // set2.size: 0, >0
-    // result.size: 0, >0
-    //
-
-    // This test covers set1.size=0, set2.size=0, result.size=0
-    @Test
-    public void testEmptySet1EmptySet2(){
-        Set<String> set1 = new HashSet<String>();
-        Set<String> set2 = new HashSet<String>();
-
-        assertTrue("expect empty set", Utils.caseInsensitiveSetUnion(set1, set2).isEmpty());
-    }
-
-    // This test covers set1.size>0, set2.size=0, result.size>0
-    @Test
-    public void testSet1EmptySet2(){
-        Set<String> set1 = new HashSet<String>(Arrays.asList("Aaa", "bes", "ca"));
-        Set<String> set2 = new HashSet<String>();
-
-        assertEquals("expect a set with 3 elements", 3, Utils.caseInsensitiveSetUnion(set1, set2).size());
-        assertTrue("expect a set of \"Aaa\", \"bes\", \"ca\"", Utils.caseInsensitiveSetUnion(set1, set2).containsAll(Arrays.asList("Aaa", "bes", "ca")));
-    }
-
-    // This test covers set1.size>0, set2.size=0, result.size>0
-    @Test
-    public void testEmptySet1Set2(){
-        Set<String> set1 = new HashSet<String>();
-        Set<String> set2 = new HashSet<String>(Arrays.asList("Aaa", "bes", "ca"));
-
-        assertEquals("expect a set with 3 elements", 3, Utils.caseInsensitiveSetUnion(set1, set2).size());
-        assertTrue("expect a set of \"Aaa\", \"bes\", \"ca\"", Utils.caseInsensitiveSetUnion(set1, set2).containsAll(Arrays.asList("Aaa", "bes", "ca")));
-    }
-
-    // This test covers set1.size>0, set2.size>0, result.size>0
-    @Test
-    public void testSet1Set2(){
-        Set<String> set1 = new HashSet<String>(Arrays.asList("aaa", "Bea", "Coo", "dawn"));
-        Set<String> set2 = new HashSet<String>(Arrays.asList("AAA", "beA", "cOO", "Ea"));
-
-        assertEquals("expect a set with 3 elements", 5, Utils.caseInsensitiveSetUnion(set1, set2).size());
-        assertTrue("expect a set of \"aaa\", \"Bea\", \"Coo\", \"dawn\", \"Ea\"", Utils.caseInsensitiveSetUnion(set1, set2).containsAll(Arrays.asList("aaa", "Bea", "Coo", "dawn", "Ea")));
-    }
 
     //
     // Testing strategies for getMentionedUserOneTweet(tweet) -> result

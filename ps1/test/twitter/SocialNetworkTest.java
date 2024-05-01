@@ -5,11 +5,8 @@ package twitter;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -20,17 +17,51 @@ public class SocialNetworkTest {
      * See the ic03-testing exercise for examples of what a testing strategy comment looks like.
      * Make sure you have partitions.
      */
+
+    private static final Instant d1 = Instant.parse("2016-02-17T10:00:00Z");
+    private static final Instant d2 = Instant.parse("2016-02-17T11:00:00Z");
+    private static final Instant d3 = Instant.parse("2016-02-17T12:00:00Z");
+    private static final Instant d4 = Instant.parse("2016-02-17T13:00:00Z");
+
+    private static final Tweet tweet1 = new Tweet(1, "alyssa", "is it reasonable to talk about rivest so much?", d1);
+    private static final Tweet tweet2 = new Tweet(2, "bbitdiddle", "rivest talk in 30 minutes #hype", d2);
+    private static final Tweet tweet3 = new Tweet(3, "ABA", "Hi, @-ONE123, I'm @TWO666, is xYz@one123 yours email? I like @ symbol.", d3);
+    private static final Tweet tweet4 = new Tweet(4, "aba", "I'm @-one123, 456@-one123 is my email, not Xyz@one123.", d4);
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
         assert false; // make sure assertions are enabled with VM argument: -ea
     }
-    
+
+    //
+    // Testing strategies for guessFollowsGraph(tweets) -> result:
+    //
+    // tweets.size: 0, >0
+    // result.size: 0, >0
+    // result[key].size: 0, >0
+    //
+
+    // This test covers tweets.size=0, result.size=0
     @Test
     public void testGuessFollowsGraphEmpty() {
         Map<String, Set<String>> followsGraph = SocialNetwork.guessFollowsGraph(new ArrayList<>());
         
         assertTrue("expected empty graph", followsGraph.isEmpty());
+    }
+
+    // This test covers tweets.size>0, result.size>0, result[key]=0 and result[key]>0
+    @Test
+    public void testGuessFollowsGraph(){
+        Map<String, Set<String>> trueGraph = new HashMap<>();
+        trueGraph.put("alyssa", new HashSet<>());
+        trueGraph.put("bbitdiddle", new HashSet<>());
+        trueGraph.put("aba", new HashSet<>(Arrays.asList("-one123", "two666")));
+        Map<String, Set<String>> followsGraph = SocialNetwork.guessFollowsGraph(Arrays.asList(tweet1, tweet2, tweet3, tweet4));
+
+        assertEquals("expect 3 authors", 3, followsGraph.size());
+        assertTrue("expect alyssa, bbitdiddle, aba in the key set", followsGraph.keySet().containsAll(Arrays.asList("alyssa", "bbitdiddle", "aba")));
+
+        assertEquals("expect equal following users", followsGraph, trueGraph);
     }
     
     @Test
