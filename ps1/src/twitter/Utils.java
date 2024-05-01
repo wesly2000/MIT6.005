@@ -2,9 +2,9 @@ package twitter;
 
 // This file includes some useful functions for manipulating structures like HashSet and HashMap.
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Utils {
     /**
@@ -54,5 +54,21 @@ public class Utils {
             lowerCaseSet.add(s.toLowerCase());
         }
         return lowerCaseSet;
+    }
+
+    /**
+     * Sort the HashMap.keySet() using its values according to corresponding compareTo function
+     *
+     * @param map the HashMap being sorted
+     * @return the sorted keys list using the HashMap.values() according to compareTo for the class
+     *
+     */
+
+    public static List<String> mapKeySort(Map<String, Integer> map){
+        List<String> sortedKeys = map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        return sortedKeys;
     }
 }
