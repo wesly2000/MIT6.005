@@ -63,6 +63,7 @@ public abstract class GraphInstanceTest {
     //
     // num of newly introduced vertices: 0, 1, 2
     // weight: 0, >0
+    // prevWeight: 0, >0
     //
 
     // This test covers adding new edge to a graph, with 1-2 new vertices;
@@ -125,5 +126,28 @@ public abstract class GraphInstanceTest {
 
         prevWeight = graph.set("A", "B", 2);
         assertEquals("expect 0 previous weight", 0, prevWeight);
+    }
+
+    //
+    // Test strategies for remove(vertex) -> result:
+    //
+    // vertex: exist or not in the graph
+    // result: true, false
+    //
+
+    @Test
+    public void testRemove(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        assertTrue("expect successful removal", graph.remove("B"));
+        assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
+        // Test if the edge is removed from the edges
+        assertEquals("expect 0 previous weight", 0, graph.set("A", "B", 0));
+        assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
+        // Test that the edge A->C(6) is not affected
+        assertEquals("expect 6 previous weight", 6, graph.set("A", "C", 2));
     }
 }

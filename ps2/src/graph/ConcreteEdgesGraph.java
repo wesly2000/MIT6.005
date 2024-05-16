@@ -34,12 +34,12 @@ public class ConcreteEdgesGraph implements Graph<String> {
         this.vertices.addAll(vertices);
     }
 
-    // TODO testing this constructor need to implements source() and target() first
-    public ConcreteEdgesGraph(List<Edge> edges) {
-        for (Edge edge : edges) {
-            this.set(edge.getSource(), edge.getTarget(), edge.getWeight());
-        }
-    }
+    // WARNING: Class 'Edge' is exposed outside its defined visibility scope
+//    public ConcreteEdgesGraph(List<Edge> edges) {
+//        for (Edge edge : edges) {
+//            this.set(edge.getSource(), edge.getTarget(), edge.getWeight());
+//        }
+//    }
     
     // TODO checkRep
     
@@ -74,7 +74,17 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+        // First remove all the edges which source from or target to the vertex
+        if(!vertices.contains(vertex)) return false;
+        for(int i = edges.size() - 1; i >= 0; i--) {
+            Edge e = edges.get(i);
+            if(e.getSource().equals(vertex))
+                this.set(vertex, e.getTarget(), 0);
+            else if (e.getTarget().equals(vertex))
+                this.set(e.getSource(), vertex, 0);
+        }
+        vertices.remove(vertex);
+        return true;
     }
     
     @Override public Set<String> vertices() {
