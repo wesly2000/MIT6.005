@@ -77,5 +77,14 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     //   TODO
     
     // TODO tests for operations of Edge
+    // This test covers the creator of Edge
+    @Test
+    public void EdgeTest(){
+        Edge e = new Edge("A", "B", 2);
+
+        assertEquals("Source should be A", "A", e.getSource());
+        assertEquals("Target should be B", "B", e.getTarget());
+        assertEquals("Weight should be 2", 2, e.getWeight());
+    }
     
 }

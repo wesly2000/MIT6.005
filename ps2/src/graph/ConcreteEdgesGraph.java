@@ -56,7 +56,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
             if (e.getSource().equals(source) && e.getTarget().equals(target)) {
                 int prevWeight = e.getWeight();
                 if(weight > 0)
-                    e.setWeight(weight);
+                    edges.set(i, new Edge(source, target, weight));
                 else
                     edges.remove(e);
                 return prevWeight;
@@ -106,7 +106,7 @@ class Edge {
     // TODO fields
     private final String source;
     private final String target;
-    private int weight;
+    private final int weight;
     
     // Abstraction function:
     //   represents a directed edge in graph, from source vertex to the target vertex
@@ -133,7 +133,6 @@ class Edge {
     public String getSource() { return source; }
     public String getTarget() { return target; }
     public int getWeight() { return weight; }
-    public void setWeight(int weight) { this.weight = weight; }
     
     // TODO toString()
     

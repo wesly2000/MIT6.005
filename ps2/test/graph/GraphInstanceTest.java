@@ -65,8 +65,65 @@ public abstract class GraphInstanceTest {
     // weight: 0, >0
     //
 
+    // This test covers adding new edge to a graph, with 1-2 new vertices;
+    // and we add an edge with 0 weight, which should have no effect.
     @Test
-    public void testSetUpdatesEdge(){
+    public void testSetAddEdge(){
+        Graph<String> graph = emptyInstance();
+        int prevWeight = graph.set("A", "B", 2);
 
+        assertEquals("expect vertices \"A\", \"B\"", new HashSet<>(Arrays.asList("A", "B")), graph.vertices());
+        assertEquals("expect 0 previous weight", 0, prevWeight);
+
+        prevWeight = graph.set("C", "B", 4);
+
+        assertEquals("expect vertices \"A\", \"B\", \"C\"", new HashSet<>(Arrays.asList("A", "B", "C")), graph.vertices());
+        assertEquals("expect 0 previous weight", 0, prevWeight);
+
+        prevWeight = graph.set("D", "E", 0);
+
+        assertEquals("expect vertices \"A\", \"B\", \"C\"", new HashSet<>(Arrays.asList("A", "B", "C")), graph.vertices());
+        assertEquals("expect 0 previous weight", 0, prevWeight);
+
+        prevWeight = graph.set("D", "E", 5);
+
+        assertEquals("expect vertices \"A\", \"B\", \"C\", \"D\", \"E\"", new HashSet<>(Arrays.asList("A", "B", "C", "D", "E")), graph.vertices());
+        assertEquals("expect 0 previous weight", 0, prevWeight);
+    }
+
+    // This test covers edge weight update
+    @Test
+    public void testSetUpdateEdge(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+
+        int prevWeight = graph.set("A", "B", 3);
+        assertEquals("expect 2 previous weight", 2, prevWeight);
+
+        prevWeight = graph.set("A", "B", 7);
+        assertEquals("expect 3 previous weight", 3, prevWeight);
+
+        // Test if the edge is directed, this test should return 0
+        prevWeight = graph.set("B", "C", 1);
+        assertEquals("expect 0 previous weight", 0, prevWeight);
+
+        prevWeight = graph.set("C", "B", 1);
+        assertEquals("expect 4 previous weight", 4, prevWeight);
+    }
+
+    // This test covers edge removal
+    @Test
+    public void testSetRemoveEdge(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+
+        int prevWeight = graph.set("A", "B", 0);
+        assertEquals("expect 2 previous weight", 2, prevWeight);
+        assertEquals("expect vertices \"A\", \"B\", \"C\"", new HashSet<>(Arrays.asList("A", "B", "C")), graph.vertices());
+
+        prevWeight = graph.set("A", "B", 2);
+        assertEquals("expect 0 previous weight", 0, prevWeight);
     }
 }
