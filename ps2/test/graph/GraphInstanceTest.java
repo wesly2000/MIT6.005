@@ -241,4 +241,28 @@ public abstract class GraphInstanceTest {
     }
 
     // This test integrates add, set, remove, sources and targets
+    @Test
+    public void testConcreteEdgesGraphIntegrated(){
+        Graph<String> graph = emptyInstance();
+        graph.add("A");
+        graph.set("C", "B", 2);
+
+        assertEquals("expect vertices \"A\", \"B\", \"C\"", new HashSet<>(Arrays.asList("A", "B", "C")), graph.vertices());
+
+        int prevWeight = graph.set("C", "B", 4);
+        assertEquals("expect 2 previous weight", 2, prevWeight);
+
+        graph.set("A", "B", 2);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> mapSources = new HashMap<>();
+        mapSources.put("A", 2);
+        mapSources.put("C", 4);
+        assertEquals("expect map {\"A\": 2, \"C\": 4}", mapSources, graph.sources("B"));
+
+        Map<String, Integer> mapTargets = new HashMap<>();
+        mapTargets.put("B", 2);
+        mapTargets.put("C", 6);
+        assertEquals("expect map {\"B\": 2, \"C\": 6}", mapTargets, graph.targets("A"));
+    }
 }
