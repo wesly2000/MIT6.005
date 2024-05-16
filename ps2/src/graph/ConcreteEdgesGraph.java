@@ -3,11 +3,7 @@
  */
 package graph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An implementation of Graph.
@@ -92,11 +88,19 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> map = new HashMap<>();
+        edges.stream()
+                .filter(edge -> edge.getTarget().equals(target))
+                .forEach((e) -> map.put(e.getSource(), e.getWeight()));
+        return map;
     }
     
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+        Map<String, Integer> map = new HashMap<>();
+        edges.stream()
+                .filter(edge -> edge.getSource().equals(source))
+                .forEach((e) -> map.put(e.getTarget(), e.getWeight()));
+        return map;
     }
     
     // TODO toString()
