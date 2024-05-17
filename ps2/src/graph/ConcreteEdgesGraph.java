@@ -38,10 +38,17 @@ public class ConcreteEdgesGraph implements Graph<String> {
 //    }
     
     // TODO checkRep
+    private void checkRep(){
+        for (Edge edge : edges)
+            edge.checkRep();
+    }
     
     @Override public boolean add(String vertex) {
         if (vertices.contains(vertex)) return false;
         vertices.add(vertex);
+
+        checkRep();
+
         return true;
     }
 
@@ -55,6 +62,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
                     edges.set(i, new Edge(source, target, weight));
                 else
                     edges.remove(e);
+
+                checkRep();
+
                 return prevWeight;
             }
         }
@@ -66,6 +76,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
             Edge e = new Edge(source, target, weight);
             edges.add(e);
         }
+
+        checkRep();
+
         return 0;
     }
     
@@ -80,6 +93,9 @@ public class ConcreteEdgesGraph implements Graph<String> {
                 this.set(e.getSource(), vertex, 0);
         }
         vertices.remove(vertex);
+
+        checkRep();
+
         return true;
     }
     
