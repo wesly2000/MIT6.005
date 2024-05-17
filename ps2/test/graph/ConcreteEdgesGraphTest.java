@@ -64,10 +64,43 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
     }
 
-    // Testing strategy for ConcreteEdgesGraph.toString()
-    //   TODO
-    
-    // TODO tests for ConcreteEdgesGraph.toString()
+    // Testing strategy for ConcreteEdgesGraph.toString() -> graphString
+    // vertices.size: 0, >0
+    // edges.size: 0, >0
+
+    // This test covers vertices.size=0, edges.size=0
+    @Test
+    public void testEmptyConcreteEdgesGraphToString(){
+        ConcreteEdgesGraph graph = new ConcreteEdgesGraph();
+        String graphString = "Edge graph\n" +
+                "\tvertices: [],\n" +
+                "\tedges: []";
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
+
+    // This test covers vertices.size>0, edges.size=0
+    @Test
+    public void testEmptyEdgeConcreteEdgesGraphToString(){
+        Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
+        ConcreteEdgesGraph graph = new ConcreteEdgesGraph(vertices);
+        String graphString = "Edge graph\n" +
+                "\tvertices: [A, B, C],\n" +
+                "\tedges: []";
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
+
+    // This test covers vertices.size>0, edges.size>0
+    @Test
+    public void testNonEmptyConcreteEdgesGraphToString(){
+        String graphString = "Edge graph\n" +
+                                  "\tvertices: [A, B, C],\n" +
+                                  "\tedges: [A->B: 2, A->C: 4, C->B: 6]";
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("A", "C", 4);
+        graph.set("C", "B", 6);
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
     
     /*
      * Testing Edge...
@@ -79,12 +112,18 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     // TODO tests for operations of Edge
     // This test covers the creator of Edge
     @Test
-    public void EdgeTest(){
+    public void testEdgeConstructor(){
         Edge e = new Edge("A", "B", 2);
 
         assertEquals("Source should be A", "A", e.getSource());
         assertEquals("Target should be B", "B", e.getTarget());
         assertEquals("Weight should be 2", 2, e.getWeight());
     }
-    
+
+    // This test covers edge toString()
+    @Test
+    public void testEdgeToString(){
+        Edge e = new Edge("A", "B", 2);
+        assertEquals("expect string equality", "A->B: 2", e.toString());
+    }
 }

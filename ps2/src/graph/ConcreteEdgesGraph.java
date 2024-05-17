@@ -120,7 +120,22 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     // TODO toString()
-    
+    /**
+     * A graph could be converted to a string, here is the format
+     * "Edge graph\n
+     *      vertices: [A, B, C],\n
+     *      edges: [A->B: 2, A->C: 4, C->A: 6]
+     * "
+     */
+
+    @Override public String toString() {
+        String vertices = vertices().toString();
+        List<String> edges = new ArrayList<>();
+        this.edges.forEach((e) -> edges.add(e.toString()));
+        return "Edge graph\n" +
+                "\tvertices: " + vertices + ",\n" +
+                "\tedges: " + edges.toString();
+    }
 }
 
 /**
@@ -165,5 +180,7 @@ class Edge {
     public int getWeight() { return weight; }
     
     // TODO toString()
-    
+    public String toString() {
+        return (source + "->" + target + ": " + weight).replace("\"", "");
+    }
 }
