@@ -126,4 +126,14 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         Edge e = new Edge("A", "B", 2);
         assertEquals("expect string equality", "A->B: 2", e.toString());
     }
+
+    // This test covers checkRep()
+    @Test
+    public void testCheckRep(){
+        AssertionError e = assertThrows(AssertionError.class,
+                () -> new Edge("A", "B", -2)
+        );
+
+        assertEquals("Illegal weight in edge: " + "A->B: -2" + ", edge weight should be positive", e.getMessage());
+    }
 }

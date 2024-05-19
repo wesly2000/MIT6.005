@@ -16,9 +16,10 @@ public class ConcreteEdgesGraph implements Graph<String> {
     private final List<Edge> edges = new ArrayList<>();
     
     // Abstraction function:
-    //   TODO
+    //   represents a graph whose vertices and edges are defined by
+    //   vertices and edges, respectively.
     // Representation invariant:
-    //   TODO
+    //   edge weight must be positive
     // Safety from rep exposure:
     //   All fields are private;
     //   vertices is mutable Set, so vertices() returns defensive copies of the vertices.
@@ -28,6 +29,8 @@ public class ConcreteEdgesGraph implements Graph<String> {
 
     public ConcreteEdgesGraph(Set<String> vertices) {
         this.vertices.addAll(vertices);
+
+        checkRep();
     }
 
     // WARNING: Class 'Edge' is exposed outside its defined visibility scope
@@ -126,8 +129,8 @@ public class ConcreteEdgesGraph implements Graph<String> {
      *      vertices: [A, B, C],\n
      *      edges: [A->B: 2, A->C: 4, C->A: 6]
      * "
+     * @return a string that records vertices and edges
      */
-
     @Override public String toString() {
         String vertices = vertices().toString();
         List<String> edges = new ArrayList<>();
@@ -167,19 +170,25 @@ class Edge {
         this.source = source;
         this.target = target;
         this.weight = weight;
+
+        checkRep();
     }
     
     // TODO checkRep
     public void checkRep(){
-        assert weight > 0;
+        assert weight > 0: "Illegal weight in edge: " + toString() + ", edge weight should be positive";
     }
     
     // TODO methods
     public String getSource() { return source; }
     public String getTarget() { return target; }
     public int getWeight() { return weight; }
-    
-    // TODO toString()
+
+    /**
+     * An edge could be formated in src->dst: weight
+     *
+     * @return a string describing an edge
+     */
     public String toString() {
         return (source + "->" + target + ": " + weight).replace("\"", "");
     }
