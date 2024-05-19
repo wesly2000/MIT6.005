@@ -3,10 +3,7 @@
  */
 package graph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An implementation of Graph.
@@ -25,11 +22,20 @@ public class ConcreteVerticesGraph implements Graph<String> {
     //   TODO
     
     // TODO constructor
+    public ConcreteVerticesGraph() {}
+
+    public ConcreteVerticesGraph(Set<String> vertices) {
+        for (String vertex : vertices) {
+            this.vertices.add(new Vertex(vertex));
+        }
+    }
     
     // TODO checkRep
     
     @Override public boolean add(String vertex) {
-        throw new RuntimeException("not implemented");
+        if(this.vertices().contains(vertex)) return false;
+        this.vertices.add(new Vertex(vertex));
+        return true;
     }
     
     @Override public int set(String source, String target, int weight) {
@@ -41,7 +47,11 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public Set<String> vertices() {
-        throw new RuntimeException("not implemented");
+        Set<String> verticesString = new HashSet<>();
+        for (Vertex vertex : vertices) {
+            verticesString.add(vertex.getLabel());
+        }
+        return verticesString;
     }
     
     @Override public Map<String, Integer> sources(String target) {
@@ -60,27 +70,63 @@ public class ConcreteVerticesGraph implements Graph<String> {
  * TODO specification
  * Mutable.
  * This class is internal to the rep of ConcreteVerticesGraph.
+ *
+ * A vertex contains a label(String) and date(Date)
  * 
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
  */
 class Vertex {
-    
     // TODO fields
+    private String label;
+    private Map<String, Integer> sources = new HashMap<>();
+    private Map<String, Integer> targets = new HashMap<>();
     
     // Abstraction function:
-    //   TODO
+    //   Represent a vertex with label(String), all its sources(Map) and
+    //   all its targets(Map), which consists of source(target) label
+    //   along with its positive weight
     // Representation invariant:
-    //   TODO
+    //   all weights must be positive
     // Safety from rep exposure:
-    //   TODO
+    //   Since vertex is mutable, we allow mutators on vertex;
+    //   label and size are immutable, so defensive copy is not needed;
+    //   for date, in creator, observer and mutator we do defensive copies
+    //   to avoid accidental modification.
     
     // TODO constructor
+    public Vertex(String label) { this.label = label; }
     
     // TODO checkRep
     
     // TODO methods
-    
-    // TODO toString()
-    
+    public String getLabel() { return label; }
+
+    public Map<String, Integer> getSources() { return sources; }
+
+    public Map<String, Integer> getTargets() { return targets; }
+
+//    public boolean addSource(String source, int weight) {
+//        // Here we follow the traditional get-put workflow to get the boolean return,
+//        // which could be used directly in set() of graph
+//        if (!sources.containsKey(source)) {}
+//        return true;
+//    }
+//
+//    public boolean addTarget(String target, int weight) {
+//        if (!targets.containsKey(target)) {}
+//        return true;
+//    }
+
+    /**
+     * The string rep of a vertex is like:
+     *
+     * Vertex A: Src: {B=2, C=3}, Dst: {D=4}
+     *
+     * @return the string that represents the vertex info
+     */
+    @Override public String toString(){
+        return "Vertex " + label + ": " + "Src: " + sources.toString() +
+                ", Dst: " + targets.toString();
+    }
 }

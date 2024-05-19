@@ -54,7 +54,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         assertEquals("expect singleton vertex set", 1, graph.vertices().size());
     }
 
-    // This test covers vertices.size》1
+    // This test covers vertices.size>1
     @Test
     public void ConcreteEdgesGraphMultiVerticesTest(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
