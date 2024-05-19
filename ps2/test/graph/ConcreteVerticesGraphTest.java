@@ -66,6 +66,35 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
     }
 
+    //
+    // Testing strategies for add(vertex) -> result
+    // vertex: existent or not
+    // result: true, false
+    //
+
+    // This test covers adding new vertices to a graph
+    @Test
+    public void testAddNewVertices(){
+        ConcreteVerticesGraph graph = new ConcreteVerticesGraph();
+
+        assertTrue(graph.add("A"));
+        assertTrue(graph.add("B"));
+
+        assertEquals("expect vertices \"A\", \"B\"", new HashSet<>(Arrays.asList("A", "B")), graph.vertices());
+    }
+
+    // This test covers adding existing vertices to a graph
+    @Test
+    public void testAddExistVertices(){
+        ConcreteVerticesGraph graph = new ConcreteVerticesGraph();
+
+        assertTrue(graph.add("A"));
+        assertTrue(graph.add("B"));
+        assertFalse(graph.add("B"));
+
+        assertEquals("expect vertices \"A\", \"B\"", new HashSet<>(Arrays.asList("A", "B")), graph.vertices());
+    }
+
     // Testing strategy for ConcreteVerticesGraph.toString()
     //   TODO
     

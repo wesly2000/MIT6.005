@@ -34,6 +34,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
     
     @Override public boolean add(String vertex) {
         if(this.vertices().contains(vertex)) return false;
+
         this.vertices.add(new Vertex(vertex));
         return true;
     }
