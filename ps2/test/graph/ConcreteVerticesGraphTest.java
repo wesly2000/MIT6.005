@@ -7,9 +7,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Tests for ConcreteVerticesGraph.
@@ -114,6 +112,9 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertEquals("expect string equality", vInfo, v.toString());
     }
 
+
+
+
     // TODO tests for operations of Vertex
     //
     // Testing strategies for addSource(source, weight) -> result
@@ -190,5 +191,75 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         String vInfo = "Vertex A: Src: {B=1, C=2}, Dst: {D=3, E=4, F=5}";
         assertEquals("expect string equality", vInfo, v.toString());
     }
-    
+
+    //
+    // Testing strategy for sources and targets
+    // sources.size: 0, 1, >1
+    // targets.size: 0, 1, >1
+    //
+
+    @Test
+    public void testSources(){
+        Vertex v = new Vertex("A");
+        Map<String, Integer> sources = new HashMap<>();
+        // Test covers sources.size=0
+        assertEquals(sources, v.sources());
+        // Test covers sources.size=1
+        v.addSource("B", 1);
+        sources.put("B", 1);
+        assertEquals(sources, v.sources());
+        // Test covers sources.size>1
+        v.addSource("C", 2);
+        sources.put("C", 2);
+        assertEquals(sources, v.sources());
+    }
+
+    @Test
+    public void testTargets(){
+        Vertex v = new Vertex("A");
+        Map<String, Integer> targets = new HashMap<>();
+        // Test covers targets.size=0
+        assertEquals(targets, v.targets());
+        // Test covers targets.size=1
+        v.addTarget("B", 1);
+        targets.put("B", 1);
+        assertEquals(targets, v.targets());
+        // Test covers targets.size>1
+        v.addTarget("C", 2);
+        targets.put("C", 2);
+        assertEquals(targets, v.targets());
+    }
+
+    // This test check if the sources() and targets() gives
+    // defensive copies
+    @Test
+    public void testDefensiveCopies(){
+        Vertex v = new Vertex("A");
+        v.addSource("B", 1);
+        v.addSource("C", 2);
+        v.addTarget("D", 3);
+        v.addTarget("E", 4);
+        Map<String, Integer> sourcesCopy = v.sources();
+        Map<String, Integer> targetsCopy = v.targets();
+        // Update
+        sourcesCopy.put("B", 100);
+        targetsCopy.put("D", 100);
+        // Remove
+        sourcesCopy.remove("C");
+        targetsCopy.remove("E");
+        // Add
+        sourcesCopy.put("G", 500);
+        targetsCopy.put("H", 500);
+
+        Map<String, Integer> sourcesDefensive = new HashMap<>();
+        sourcesDefensive.put("B", 1);
+        sourcesDefensive.put("C", 2);
+
+        Map<String, Integer> targetsDefensive = new HashMap<>();
+        targetsDefensive.put("D", 3);
+        targetsDefensive.put("E", 4);
+
+        assertEquals(sourcesDefensive, v.sources());
+        assertEquals(targetsDefensive, v.targets());
+    }
 }

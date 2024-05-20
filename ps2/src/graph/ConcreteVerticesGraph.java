@@ -29,8 +29,17 @@ public class ConcreteVerticesGraph implements Graph<String> {
             this.vertices.add(new Vertex(vertex));
         }
     }
-    
-    // TODO checkRep
+
+    /**
+     * Check the rep invariant of a ConcreteVerticesGraph, which includes 2 steps:
+     * 1. rep invariant of all vertices;
+     * 2. If A.sources contains B with weight w, then B.targets contains A with
+     *    weight w, and vise versa.
+     */
+    private void checkRep(){
+        this.vertices.forEach(Vertex::checkRep);
+
+    }
     
     @Override public boolean add(String vertex) {
         if(this.vertices().contains(vertex)) return false;
@@ -51,6 +60,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         assert weightSrcToDst == weightDstFromSrc: "The weight outbound and inbound is not equal";
 
+        checkRep();
         return weightDstFromSrc;
     }
     
@@ -79,11 +89,13 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+        Vertex targetVertex = getVertex(target);
+        return targetVertex.sources();
     }
     
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+        Vertex sourceVertex = getVertex(source);
+        return sourceVertex.targets();
     }
     
     // TODO toString()
@@ -113,13 +125,16 @@ class Vertex {
     // Representation invariant:
     //   all weights must be positive
     // Safety from rep exposure:
-    //   TODO
+    //   Since label is String, it is guaranteed to be immutable;
+    //   the sources and targets are maps of String and Integer, which
+    //   are both immutable. Therefore, a shallow copy of them is defensive
+    //   copy.
     
     // TODO constructor
     public Vertex(String label) { this.label = label; }
     
     // checkRep() checks that every weight in the sources/targets > 0
-    private void checkRep(){
+    public void checkRep(){
         // Check for sources
         sources.forEach((k, v) -> {
             assert v > 0: String.format("The weight with %s is %d <= 0", k, v);
@@ -133,9 +148,9 @@ class Vertex {
     // TODO methods
     public String getLabel() { return label; }
 
-//    private Map<String, Integer> getSources() { return sources; }
-//
-//    private Map<String, Integer> getTargets() { return targets; }
+    public Map<String, Integer> sources() { return new HashMap<>(sources); }
+
+    public Map<String, Integer> targets() { return new HashMap<>(targets); }
 
     /**
      * Add a source vertex to the vertex with weight, if the source exists
