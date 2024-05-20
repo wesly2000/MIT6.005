@@ -160,8 +160,35 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertEquals(0, v.addTarget("B", 2));
     }
 
-    // TODO: test toString
+    //
+    // Testing strategies for toString() -> info
+    // Note that empty vertex info was tested in the constructor tests
+    //
+    // sources.size: 0, 1, >1
+    // targets.size: 0, 1, >1
+    //
 
+    // This test covers sources.size=1, targets.size=1
+    @Test
+    public void testSingleSourceSingleTargets(){
+        Vertex v = new Vertex("A");
+        assertEquals(0, v.addSource("C", 1));
+        assertEquals(0, v.addTarget("B", 3));
+        String vInfo = "Vertex A: Src: {C=1}, Dst: {B=3}";
+        assertEquals("expect string equality", vInfo, v.toString());
+    }
 
+    // This test covers sources.size>1, targets.size>1
+    @Test
+    public void testMultipleSourceMultipleTargets(){
+        Vertex v = new Vertex("A");
+        assertEquals(0, v.addSource("B", 1));
+        assertEquals(0, v.addSource("C", 2));
+        assertEquals(0, v.addTarget("D", 3));
+        assertEquals(0, v.addTarget("E", 4));
+        assertEquals(0, v.addTarget("F", 5));
+        String vInfo = "Vertex A: Src: {B=1, C=2}, Dst: {D=3, E=4, F=5}";
+        assertEquals("expect string equality", vInfo, v.toString());
+    }
     
 }
