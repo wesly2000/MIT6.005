@@ -42,8 +42,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     
     // TODO checkRep
     private void checkRep(){
-        for (Edge edge : edges)
-            edge.checkRep();
+        edges.forEach(Edge::checkRep);
     }
     
     @Override public boolean add(String vertex) {
