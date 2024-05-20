@@ -40,7 +40,18 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public int set(String source, String target, int weight) {
-        throw new RuntimeException("not implemented");
+        this.add(source);
+        this.add(target);
+
+        Vertex sourceVertex = getVertex(source);
+        Vertex targetVertex = getVertex(target);
+
+        int weightSrcToDst = sourceVertex.addTarget(target, weight);
+        int weightDstFromSrc = targetVertex.addSource(source, weight);
+
+        assert weightSrcToDst == weightDstFromSrc: "The weight outbound and inbound is not equal";
+
+        return weightDstFromSrc;
     }
     
     @Override public boolean remove(String vertex) {
@@ -53,6 +64,18 @@ public class ConcreteVerticesGraph implements Graph<String> {
             verticesString.add(vertex.getLabel());
         }
         return verticesString;
+    }
+
+    /**
+     *
+     * @param vertex the label of an exising vertex
+     * @return the underlying vertex
+     */
+    private Vertex getVertex(String vertex) {
+        for(Vertex v: vertices)
+            if(v.getLabel().equals(vertex)) return v;
+
+        throw new RuntimeException("Vertex not found");
     }
     
     @Override public Map<String, Integer> sources(String target) {
@@ -72,7 +95,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
  * Mutable.
  * This class is internal to the rep of ConcreteVerticesGraph.
  *
- * A vertex contains a label(String) and date(Date)
+ * A vertex contains a label(String), sources and targets(Map)
  * 
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
@@ -90,34 +113,95 @@ class Vertex {
     // Representation invariant:
     //   all weights must be positive
     // Safety from rep exposure:
-    //   Since vertex is mutable, we allow mutators on vertex;
-    //   label and size are immutable, so defensive copy is not needed;
-    //   for date, in creator, observer and mutator we do defensive copies
-    //   to avoid accidental modification.
+    //   TODO
     
     // TODO constructor
     public Vertex(String label) { this.label = label; }
     
-    // TODO checkRep
+    // checkRep() checks that every weight in the sources/targets > 0
+    private void checkRep(){
+        // Check for sources
+        sources.forEach((k, v) -> {
+            assert v > 0: String.format("The weight with %s is %d <= 0", k, v);
+        });
+        // Check for targets
+        targets.forEach((k, v) -> {
+            assert v > 0: String.format("The weight with %s is %d <= 0", k, v);
+        });
+    }
     
     // TODO methods
     public String getLabel() { return label; }
 
-    public Map<String, Integer> getSources() { return sources; }
-
-    public Map<String, Integer> getTargets() { return targets; }
-
-//    public boolean addSource(String source, int weight) {
-//        // Here we follow the traditional get-put workflow to get the boolean return,
-//        // which could be used directly in set() of graph
-//        if (!sources.containsKey(source)) {}
-//        return true;
-//    }
+//    private Map<String, Integer> getSources() { return sources; }
 //
-//    public boolean addTarget(String target, int weight) {
-//        if (!targets.containsKey(target)) {}
-//        return true;
-//    }
+//    private Map<String, Integer> getTargets() { return targets; }
+
+    /**
+     * Add a source vertex to the vertex with weight, if the source exists
+     *      if weight > 0, update the weight
+     *      if weight = 0, remove the source
+     * if the source does not exist
+     *      if weight > 0, add the source to its sources
+     *      if weight < 0, do nothing
+     *
+     * @param source the source added
+     * @param weight a non-negative weight
+     * @return if the source already exists, return the previous weight,
+     *          otherwise, return 0
+     */
+    public int addSource(String source, int weight) {
+        // Here we follow the traditional get-put workflow to get the boolean return,
+        // which could be used directly in set() of graph
+        int prevWeight = 0;
+
+        if(weight > 0){
+            if(this.sources.containsKey(source))
+                prevWeight = this.sources.get(source);
+            this.sources.put(source, weight);
+        }
+        else{
+            if(this.sources.containsKey(source)){
+                prevWeight = this.sources.get(source);
+                this.sources.remove(source);
+            }
+        }
+
+        checkRep();
+        return prevWeight;
+    }
+
+    /**
+     * Add a target vertex to the vertex with weight, if the target exists
+     *      if weight > 0, update the weight
+     *      if weight = 0, remove the target
+     * if the target does not exist
+     *      if weight > 0, add the target to its targets
+     *      if weight < 0, do nothing
+     *
+     * @param target the target added
+     * @param weight a non-negative weight
+     * @return if the target already exists, return the previous weight,
+     *          otherwise, return 0
+     */
+    public int addTarget(String target, int weight) {
+        int prevWeight = 0;
+
+        if(weight > 0){
+            if(this.targets.containsKey(target))
+                prevWeight = this.targets.get(target);
+            this.targets.put(target, weight);
+        }
+        else{
+            if(this.targets.containsKey(target)){
+                prevWeight = this.targets.get(target);
+                this.targets.remove(target);
+            }
+        }
+
+        checkRep();
+        return prevWeight;
+    }
 
     /**
      * The string rep of a vertex is like:

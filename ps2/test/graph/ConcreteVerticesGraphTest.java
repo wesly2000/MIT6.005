@@ -122,12 +122,46 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     // weight: <=0, >0
     //
 
-//    @Test
-//    public void testAddSource(){
-//        Vertex v = new Vertex("A");
-//    }
+    @Test
+    public void testAddSource(){
+        Vertex v = new Vertex("A");
+        // Add and update
+        assertEquals(0, v.addSource("B", 1));
+        assertEquals(1, v.addSource("B", 2));
+        assertEquals(0, v.addSource("C", 3));
+        assertEquals(3, v.addSource("C", 4));
+        // Remove B from A's sources
+        assertEquals(2, v.addSource("B", 0));
+        assertEquals(0, v.addSource("B", 2));
+        // Robustness test: weight < 0 should trigger edge removal
+        assertEquals(2, v.addSource("B", -100));
+        assertEquals(0, v.addSource("B", 2));
+    }
+
+    //
+    // Testing strategies for addTarget(target, weight) -> result
+    //
+    // target: existent or non-existent sources
+    // weight: <=0, >0
+    //
+    @Test
+    public void testAddTarget(){
+        Vertex v = new Vertex("A");
+        // Add and update
+        assertEquals(0, v.addTarget("B", 1));
+        assertEquals(1, v.addTarget("B", 2));
+        assertEquals(0, v.addTarget("C", 3));
+        assertEquals(3, v.addTarget("C", 4));
+        // Remove B from A's sources
+        assertEquals(2, v.addTarget("B", 0));
+        assertEquals(0, v.addTarget("B", 2));
+        // Robustness test: weight < 0 should trigger edge removal
+        assertEquals(2, v.addTarget("B", -100));
+        assertEquals(0, v.addTarget("B", 2));
+    }
 
     // TODO: test toString
+
 
     
 }
