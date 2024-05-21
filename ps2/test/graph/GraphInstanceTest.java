@@ -40,9 +40,16 @@ public abstract class GraphInstanceTest {
         assertEquals("expected new graph to have no vertices",
                 Collections.emptySet(), emptyInstance().vertices());
     }
+
+
     
     // TODO other tests for instance methods of Graph
-    // This test covers add 1-2 vertices to the graph
+
+    //
+    // Testing strategies for add(vertex) -> result
+    // vertex: existent or not
+    // result: true, false
+    //
     @Test
     public void testAddVertices() {
         Graph<String> graph = emptyInstance();
@@ -125,6 +132,7 @@ public abstract class GraphInstanceTest {
         assertEquals("expect 0 previous weight", 0, prevWeight);
     }
 
+
     //
     // Test strategies for remove(vertex) -> result:
     //
@@ -146,6 +154,107 @@ public abstract class GraphInstanceTest {
         assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
         // Test that the edge A->C(6) is not affected
         assertEquals("expect 6 previous weight", 6, graph.set("A", "C", 2));
+    }
+
+
+    //
+    // Testing strategies for sources(target) -> map:
+    //
+    // target: in or not in graph.vertices
+    // map.size: 0, 1, >1
+    //
+
+    // This test covers target in and not in graph.vertices, map.size=0
+    @Test
+    public void testSourcesEmptySources(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        // This test should throw IllegalArgumentException since D does not exist
+        // assertTrue("expect empty map", graph.targets("D").isEmpty());
+        assertTrue("expect empty map", graph.sources("A").isEmpty());
+        assertThrows("expect IllegalArgumentException",
+                IllegalArgumentException.class,
+                () -> graph.sources("D"));
+    }
+
+    // This test covers target in graph.vertices, map.size=1
+    @Test
+    public void testSourcesSingleSourceVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 6);
+        assertEquals("expect map {\"A\": 6}", map, graph.sources("C"));
+    }
+
+    // This test covers target in graph.vertices, map.size>1
+    @Test
+    public void testSourcesMultipleSourceVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 2);
+        map.put("C", 4);
+        assertEquals("expect map {\"A\": 2, \"C\": 4}", map, graph.sources("B"));
+    }
+
+    //
+    // Testing strategies for targets(source) -> map:
+    //
+    // source: in or not in graph.vertices
+    // map.size: 0, 1, >1
+    //
+
+    // This test covers source in and not in graph.vertices, map.size=0
+    @Test
+    public void testTargetsEmptyTargets(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        // This test should throw IllegalArgumentException since D does not exist
+        // assertTrue("expect empty map", graph.targets("D").isEmpty());
+        assertTrue("expect empty map", graph.targets("B").isEmpty());
+        assertThrows("expect IllegalArgumentException",
+                IllegalArgumentException.class,
+                () -> graph.targets("D"));
+    }
+
+    // This test covers source in graph.vertices, map.size=1
+    @Test
+    public void testTargetsSingleTargetVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("B", 4);
+        assertEquals("expect map {\"B\": 4}", map, graph.targets("C"));
+    }
+
+    // This test covers source in graph.vertices, map.size>1
+    @Test
+    public void testTargetsMultipleTargetVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("B", 2);
+        map.put("C", 6);
+        assertEquals("expect map {\"B\": 2, \"C\": 6}", map, graph.targets("A"));
     }
 
 
