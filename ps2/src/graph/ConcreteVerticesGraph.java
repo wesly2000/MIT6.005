@@ -34,11 +34,39 @@ public class ConcreteVerticesGraph implements Graph<String> {
      * Check the rep invariant of a ConcreteVerticesGraph, which includes 2 steps:
      * 1. rep invariant of all vertices;
      * 2. If A.sources contains B with weight w, then B.targets contains A with
-     *    weight w, and vise versa.
+     *    weight w, and vise versa.(inbound/outbound consistence)
      */
     private void checkRep(){
         this.vertices.forEach(Vertex::checkRep);
-
+        // Check vertex inbound/outbound consistence for each vertex
+        this.vertices.forEach(vertex -> {
+            // Check inbound consistence
+            vertex.sources().forEach((label, weight) -> {
+                Vertex sourceVertex = getVertex(label);
+                // Check for link consistence
+                assert sourceVertex.targets().containsKey(vertex.getLabel()): String.format("Missing target: %s has source %s, but" +
+                                "%s has no target %s.",
+                        vertex.getLabel(), label, sourceVertex.getLabel(), vertex.getLabel());
+                // Check for weight consistence
+                assert sourceVertex.targets().get(vertex.getLabel()).equals(weight) : String.format("Inbound and outbound weights mismatch:" +
+                        "%s inbound weight is %d, but %s outbound weight is %d.",
+                        vertex.getLabel(), weight, sourceVertex.getLabel(), sourceVertex.targets().get(vertex.getLabel())
+                        );
+            });
+            // Check outbound consistence
+            vertex.targets().forEach((label, weight) -> {
+                Vertex targetVertex = getVertex(label);
+                // Check for link consistence
+                assert targetVertex.sources().containsKey(vertex.getLabel()): String.format("Missing target: %s has target %s, but" +
+                        "%s has no source %s.",
+                        vertex.getLabel(), label, targetVertex.getLabel(), vertex.getLabel());
+                // Check for weight consistence
+                assert targetVertex.sources().get(vertex.getLabel()).equals(weight) : String.format("Inbound and outbound weights mismatch:" +
+                                "%s outbound weight is %d, but %s inbound weight is %d.",
+                        vertex.getLabel(), weight, targetVertex.getLabel(), targetVertex.sources().get(vertex.getLabel())
+                );
+            });
+        });
     }
     
     @Override public boolean add(String vertex) {
@@ -49,19 +77,26 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public int set(String source, String target, int weight) {
-        this.add(source);
-        this.add(target);
+        int prevWeight = 0;
+        if(weight > 0){
+            // Add or update
+            this.add(source);
+            this.add(target);
 
-        Vertex sourceVertex = getVertex(source);
-        Vertex targetVertex = getVertex(target);
-
-        int weightSrcToDst = sourceVertex.addTarget(target, weight);
-        int weightDstFromSrc = targetVertex.addSource(source, weight);
-
-        assert weightSrcToDst == weightDstFromSrc: "The weight outbound and inbound is not equal";
-
+            prevWeight = getVertex(source).addTarget(target, weight);
+            getVertex(target).addSource(source, weight);
+        }else{
+            // If the edge exists, remove it
+            if(this.vertices().contains(source) && this.vertices().contains(target)){
+                // Note that when weight <= 0, if the edge exists, addTarget(addSource)
+                // will remove that edge;
+                // if the edge does not exist, do nothing
+                prevWeight = getVertex(source).addTarget(target, weight);
+                getVertex(target).addSource(source, weight);
+            }
+        }
         checkRep();
-        return weightDstFromSrc;
+        return prevWeight;
     }
     
     @Override public boolean remove(String vertex) {
