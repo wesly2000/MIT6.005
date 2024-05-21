@@ -178,6 +178,31 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertEquals("expect 0 previous weight", 0, prevWeight);
     }
 
+
+    //
+    // Test strategies for remove(vertex) -> result:
+    //
+    // vertex: exist or not in the graph
+    // result: true, false
+    //
+
+    @Test
+    public void testRemove(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        assertTrue("expect successful removal", graph.remove("B"));
+        assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
+        // Test if the edge is removed from the edges
+        assertEquals("expect 0 previous weight", 0, graph.set("A", "B", 0));
+        assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
+        // Test that the edge A->C(6) is not affected
+        assertEquals("expect 6 previous weight", 6, graph.set("A", "C", 2));
+    }
+
+
     // Testing strategy for ConcreteVerticesGraph.toString()
     //   TODO
     

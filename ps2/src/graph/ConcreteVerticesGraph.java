@@ -100,7 +100,18 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+        if(!this.vertices().contains(vertex)) return false;
+        // remove using set with weight=0
+        this.vertices.forEach((v) -> {
+            if(v.sources().containsKey(vertex))
+                this.set(vertex, v.getLabel(), 0);
+            if(v.targets().containsKey(vertex))
+                this.set(v.getLabel(), vertex, 0);
+        });
+        this.vertices.remove(getVertex(vertex));
+
+        checkRep();
+        return true;
     }
     
     @Override public Set<String> vertices() {
