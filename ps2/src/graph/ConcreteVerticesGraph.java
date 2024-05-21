@@ -135,11 +135,13 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override public Map<String, Integer> sources(String target) {
+        if(!vertices().contains(target)) throw new IllegalArgumentException("No such vertex: " + target);
         Vertex targetVertex = getVertex(target);
         return targetVertex.sources();
     }
     
     @Override public Map<String, Integer> targets(String source) {
+        if(!vertices().contains(source)) throw new IllegalArgumentException("No such vertex: " + source);
         Vertex sourceVertex = getVertex(source);
         return sourceVertex.targets();
     }
