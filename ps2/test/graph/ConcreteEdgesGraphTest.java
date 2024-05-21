@@ -64,6 +64,108 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
     }
 
+
+    //
+    // Testing strategies for sources(target) -> map:
+    //
+    // target: in or not in graph.vertices
+    // map.size: 0, 1, >1
+    //
+
+    // This test covers target in and not in graph.vertices, map.size=0
+    @Test
+    public void testSourcesEmptySources(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        // This test should throw IllegalArgumentException since D does not exist
+        // assertTrue("expect empty map", graph.targets("D").isEmpty());
+        assertTrue("expect empty map", graph.sources("A").isEmpty());
+        assertThrows("expect IllegalArgumentException",
+                IllegalArgumentException.class,
+                () -> graph.sources("D"));
+    }
+
+    // This test covers target in graph.vertices, map.size=1
+    @Test
+    public void testSourcesSingleSourceVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 6);
+        assertEquals("expect map {\"A\": 6}", map, graph.sources("C"));
+    }
+
+    // This test covers target in graph.vertices, map.size>1
+    @Test
+    public void testSourcesMultipleSourceVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("A", 2);
+        map.put("C", 4);
+        assertEquals("expect map {\"A\": 2, \"C\": 4}", map, graph.sources("B"));
+    }
+
+    //
+    // Testing strategies for targets(source) -> map:
+    //
+    // source: in or not in graph.vertices
+    // map.size: 0, 1, >1
+    //
+
+    // This test covers source in and not in graph.vertices, map.size=0
+    @Test
+    public void testTargetsEmptyTargets(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        // This test should throw IllegalArgumentException since D does not exist
+        // assertTrue("expect empty map", graph.targets("D").isEmpty());
+        assertTrue("expect empty map", graph.targets("B").isEmpty());
+        assertThrows("expect IllegalArgumentException",
+                IllegalArgumentException.class,
+                () -> graph.targets("D"));
+    }
+
+    // This test covers source in graph.vertices, map.size=1
+    @Test
+    public void testTargetsSingleTargetVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("B", 4);
+        assertEquals("expect map {\"B\": 4}", map, graph.targets("C"));
+    }
+
+    // This test covers source in graph.vertices, map.size>1
+    @Test
+    public void testTargetsMultipleTargetVertex(){
+        Graph<String> graph = emptyInstance();
+        graph.set("A", "B", 2);
+        graph.set("C", "B", 4);
+        graph.set("A", "C", 6);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("B", 2);
+        map.put("C", 6);
+        assertEquals("expect map {\"B\": 2, \"C\": 6}", map, graph.targets("A"));
+    }
+
+
     // Testing strategy for ConcreteEdgesGraph.toString() -> graphString
     // vertices.size: 0, >0
     // edges.size: 0, >0

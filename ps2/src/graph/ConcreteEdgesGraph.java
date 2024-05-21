@@ -106,6 +106,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     @Override public Map<String, Integer> sources(String target) {
+        if(!vertices().contains(target)) throw new IllegalArgumentException("No such vertex: " + target);
         Map<String, Integer> map = new HashMap<>();
         edges.stream()
                 .filter(edge -> edge.getTarget().equals(target))
@@ -114,6 +115,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
     
     @Override public Map<String, Integer> targets(String source) {
+        if(!vertices().contains(source)) throw new IllegalArgumentException("No such vertex: " + source);
         Map<String, Integer> map = new HashMap<>();
         edges.stream()
                 .filter(edge -> edge.getSource().equals(source))
