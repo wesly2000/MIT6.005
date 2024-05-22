@@ -10,9 +10,9 @@ import java.util.*;
  * 
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteVerticesGraph implements Graph<String> {
+public class ConcreteVerticesGraph<L> implements Graph<L> {
     
-    private final List<Vertex> vertices = new ArrayList<>();
+    private final List<Vertex<L>> vertices = new ArrayList<>();
     
     // Abstraction function:
     //   a graph represented by this.vertices, each of which possesses a
@@ -31,9 +31,9 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
     public ConcreteVerticesGraph() {}
 
-    public ConcreteVerticesGraph(Set<String> vertices) {
-        for (String vertex : vertices) {
-            this.vertices.add(new Vertex(vertex));
+    public ConcreteVerticesGraph(Set<L> vertices) {
+        for (L vertex : vertices) {
+            this.vertices.add(new Vertex<>(vertex));
         }
     }
 
@@ -49,7 +49,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
         this.vertices.forEach(vertex -> {
             // Check inbound consistence
             vertex.sources().forEach((label, weight) -> {
-                Vertex sourceVertex = getVertex(label);
+                Vertex<L> sourceVertex = getVertexFromLabel(label);
                 // Check for link consistence
                 assert sourceVertex.targets().containsKey(vertex.getLabel()): String.format("Missing target: %s has source %s, but" +
                                 "%s has no target %s.",
@@ -62,7 +62,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
             });
             // Check outbound consistence
             vertex.targets().forEach((label, weight) -> {
-                Vertex targetVertex = getVertex(label);
+                Vertex<L> targetVertex = getVertexFromLabel(label);
                 // Check for link consistence
                 assert targetVertex.sources().containsKey(vertex.getLabel()): String.format("Missing target: %s has target %s, but" +
                         "%s has no source %s.",
@@ -76,37 +76,37 @@ public class ConcreteVerticesGraph implements Graph<String> {
         });
     }
     
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
         if(this.vertices().contains(vertex)) return false;
 
-        this.vertices.add(new Vertex(vertex));
+        this.vertices.add(new Vertex<>(vertex));
         return true;
     }
     
-    @Override public int set(String source, String target, int weight) {
+    @Override public int set(L source, L target, int weight) {
         int prevWeight = 0;
         if(weight > 0){
             // Add or update
             this.add(source);
             this.add(target);
 
-            prevWeight = getVertex(source).addTarget(target, weight);
-            getVertex(target).addSource(source, weight);
+            prevWeight = getVertexFromLabel(source).addTarget(target, weight);
+            getVertexFromLabel(target).addSource(source, weight);
         }else{
             // If the edge exists, remove it
             if(this.vertices().contains(source) && this.vertices().contains(target)){
                 // Note that when weight <= 0, if the edge exists, addTarget(addSource)
                 // will remove that edge;
                 // if the edge does not exist, do nothing
-                prevWeight = getVertex(source).addTarget(target, weight);
-                getVertex(target).addSource(source, weight);
+                prevWeight = getVertexFromLabel(source).addTarget(target, weight);
+                getVertexFromLabel(target).addSource(source, weight);
             }
         }
         checkRep();
         return prevWeight;
     }
     
-    @Override public boolean remove(String vertex) {
+    @Override public boolean remove(L vertex) {
         if(!this.vertices().contains(vertex)) return false;
         // remove using set with weight=0
         this.vertices.forEach((v) -> {
@@ -115,15 +115,15 @@ public class ConcreteVerticesGraph implements Graph<String> {
             if(v.targets().containsKey(vertex))
                 this.set(v.getLabel(), vertex, 0);
         });
-        this.vertices.remove(getVertex(vertex));
+        this.vertices.remove(getVertexFromLabel(vertex));
 
         checkRep();
         return true;
     }
     
-    @Override public Set<String> vertices() {
-        Set<String> verticesString = new HashSet<>();
-        for (Vertex vertex : vertices) {
+    @Override public Set<L> vertices() {
+        Set<L> verticesString = new HashSet<>();
+        for (Vertex<L> vertex : vertices) {
             verticesString.add(vertex.getLabel());
         }
         return verticesString;
@@ -131,25 +131,25 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
     /**
      *
-     * @param vertex the label of an exising vertex
+     * @param label the label of an exising vertex
      * @return the underlying vertex
      */
-    private Vertex getVertex(String vertex) {
-        for(Vertex v: vertices)
-            if(v.getLabel().equals(vertex)) return v;
+    private Vertex<L> getVertexFromLabel(L label) {
+        for(Vertex<L> v: vertices)
+            if(v.getLabel().equals(label)) return v;
 
         throw new RuntimeException("Vertex not found");
     }
     
-    @Override public Map<String, Integer> sources(String target) {
+    @Override public Map<L, Integer> sources(L target) {
         if(!vertices().contains(target)) throw new IllegalArgumentException("No such vertex: " + target);
-        Vertex targetVertex = getVertex(target);
+        Vertex<L> targetVertex = getVertexFromLabel(target);
         return targetVertex.sources();
     }
     
-    @Override public Map<String, Integer> targets(String source) {
+    @Override public Map<L, Integer> targets(L source) {
         if(!vertices().contains(source)) throw new IllegalArgumentException("No such vertex: " + source);
-        Vertex sourceVertex = getVertex(source);
+        Vertex<L> sourceVertex = getVertexFromLabel(source);
         return sourceVertex.targets();
     }
 
@@ -186,25 +186,25 @@ public class ConcreteVerticesGraph implements Graph<String> {
  * <p>PS2 instructions: the specification and implementation of this class is
  * up to you.
  */
-class Vertex {
+class Vertex<L> {
 
-    private String label;
-    private Map<String, Integer> sources = new HashMap<>();
-    private Map<String, Integer> targets = new HashMap<>();
+    private L label;
+    private Map<L, Integer> sources = new HashMap<>();
+    private Map<L, Integer> targets = new HashMap<>();
     
     // Abstraction function:
-    //   Represent a vertex with label(String), all its sources(Map) and
+    //   Represent a vertex with label(L), all its sources(Map) and
     //   all its targets(Map), which consists of source(target) label
     //   along with its positive weight
     // Representation invariant:
     //   all weights must be positive
     // Safety from rep exposure:
-    //   Since label is String, it is guaranteed to be immutable;
+    //   Since label is L, it is guaranteed to be immutable;
     //   the sources and targets are maps of String and Integer, which
     //   are both immutable. Therefore, a shallow copy of them is defensive
     //   copy.
 
-    public Vertex(String label) { this.label = label; }
+    public Vertex(L label) { this.label = label; }
     
     // checkRep() checks that every weight in the sources/targets > 0
     public void checkRep(){
@@ -219,11 +219,11 @@ class Vertex {
     }
     
 
-    public String getLabel() { return label; }
+    public L getLabel() { return label; }
 
-    public Map<String, Integer> sources() { return new HashMap<>(sources); }
+    public Map<L, Integer> sources() { return new HashMap<>(sources); }
 
-    public Map<String, Integer> targets() { return new HashMap<>(targets); }
+    public Map<L, Integer> targets() { return new HashMap<>(targets); }
 
     /**
      * Add a source vertex to the vertex with weight, if the source exists
@@ -238,7 +238,7 @@ class Vertex {
      * @return if the source already exists, return the previous weight,
      *          otherwise, return 0
      */
-    public int addSource(String source, int weight) {
+    public int addSource(L source, int weight) {
         // Here we follow the traditional get-put workflow to get the boolean return,
         // which could be used directly in set() of graph
         int prevWeight = 0;
@@ -272,7 +272,7 @@ class Vertex {
      * @return if the target already exists, return the previous weight,
      *          otherwise, return 0
      */
-    public int addTarget(String target, int weight) {
+    public int addTarget(L target, int weight) {
         int prevWeight = 0;
 
         if(weight > 0){
