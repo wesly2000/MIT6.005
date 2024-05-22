@@ -23,7 +23,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
      * Provide a ConcreteEdgesGraph for tests in GraphInstanceTest.
      */
     @Override public Graph<String> emptyInstance() {
-        return new ConcreteEdgesGraph();
+        return new ConcreteEdgesGraph<>();
     }
     
     /*
@@ -40,7 +40,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteEdgesGraphEmptyVerticesTest(){
         Set<String> vertices = new HashSet<>();
-        ConcreteEdgesGraph graph = new ConcreteEdgesGraph(vertices);
+        ConcreteEdgesGraph<String> graph = new ConcreteEdgesGraph<>(vertices);
 
         assertTrue("expect empty vertex set", graph.vertices().isEmpty());
     }
@@ -49,7 +49,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteEdgesGraphSingleVerticesTest(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A"));
-        ConcreteEdgesGraph graph = new ConcreteEdgesGraph(vertices);
+        ConcreteEdgesGraph<String> graph = new ConcreteEdgesGraph<>(vertices);
 
         assertEquals("expect singleton vertex set", 1, graph.vertices().size());
     }
@@ -58,7 +58,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteEdgesGraphMultiVerticesTest(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
-        ConcreteEdgesGraph graph = new ConcreteEdgesGraph(vertices);
+        ConcreteEdgesGraph<String> graph = new ConcreteEdgesGraph<>(vertices);
 
         assertEquals("expect a vertex set with 3 elements", 3, graph.vertices().size());
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
@@ -71,7 +71,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     // This test covers vertices.size=0, edges.size=0
     @Test
     public void testEmptyConcreteEdgesGraphToString(){
-        ConcreteEdgesGraph graph = new ConcreteEdgesGraph();
+        ConcreteEdgesGraph<String> graph = new ConcreteEdgesGraph<>();
         String graphString = "Edge graph\n" +
                 "\tvertices: [],\n" +
                 "\tedges: []";
@@ -82,7 +82,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     @Test
     public void testEmptyEdgeConcreteEdgesGraphToString(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
-        ConcreteEdgesGraph graph = new ConcreteEdgesGraph(vertices);
+        ConcreteEdgesGraph<String> graph = new ConcreteEdgesGraph<>(vertices);
         String graphString = "Edge graph\n" +
                 "\tvertices: [A, B, C],\n" +
                 "\tedges: []";
@@ -109,7 +109,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     // This test covers the creator of Edge
     @Test
     public void testEdgeConstructor(){
-        Edge e = new Edge("A", "B", 2);
+        Edge<String> e = new Edge<>("A", "B", 2);
 
         assertEquals("Source should be A", "A", e.getSource());
         assertEquals("Target should be B", "B", e.getTarget());
@@ -119,7 +119,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     // This test covers edge toString()
     @Test
     public void testEdgeToString(){
-        Edge e = new Edge("A", "B", 2);
+        Edge<String> e = new Edge<>("A", "B", 2);
         assertEquals("expect string equality", "A->B: 2", e.toString());
     }
 
@@ -127,7 +127,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     @Test
     public void testCheckRep(){
         AssertionError e = assertThrows(AssertionError.class,
-                () -> new Edge("A", "B", -2)
+                () -> new Edge<>("A", "B", -2)
         );
 
         assertEquals("Illegal weight in edge: " + "A->B: -2" + ", edge weight should be positive", e.getMessage());

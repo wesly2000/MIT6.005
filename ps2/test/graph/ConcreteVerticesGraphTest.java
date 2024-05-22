@@ -40,7 +40,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteVerticesGraphEmptyVerticesTest(){
         Set<String> vertices = new HashSet<>();
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>(vertices);
 
         assertTrue("expect empty vertex set", graph.vertices().isEmpty());
     }
@@ -49,7 +49,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteVerticesGraphSingleVerticesTest(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A"));
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>(vertices);
 
         assertEquals("expect singleton vertex set", 1, graph.vertices().size());
     }
@@ -58,7 +58,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void ConcreteVerticesGraphMultiVerticesTest(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>(vertices);
 
         assertEquals("expect a vertex set with 3 elements", 3, graph.vertices().size());
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
@@ -74,7 +74,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     // This test covers vertices.size=0, edges.size=0
     @Test
     public void testEmptyConcreteVerticesGraphToString(){
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph();
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>();
         String graphString = "Vertices graph\n" +
                 "\tVertices: [],\n" +
                 "\tEdges:\n";
@@ -85,7 +85,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void testEmptyEdgeConcreteVerticesGraphToString(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>(vertices);
         String graphString = "Vertices graph\n" +
                 "\tVertices: [A, B, C],\n" +
                 "\tEdges:\n" +
@@ -99,7 +99,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void testEdgeConcreteVerticesGraphToString(){
         Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        ConcreteVerticesGraph<String> graph = new ConcreteVerticesGraph<>(vertices);
         graph.set("A", "B", 2);
         graph.set("A", "C", 4);
         graph.set("C", "B", 6);
@@ -118,7 +118,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testVertexConstructor(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         String vInfo = "Vertex A: Src: {}, Dst: {}";
 
         assertEquals("expect string equality", vInfo, v.toString());
@@ -135,7 +135,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testAddSource(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         // Add and update
         assertEquals(0, v.addSource("B", 1));
         assertEquals(1, v.addSource("B", 2));
@@ -157,7 +157,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     //
     @Test
     public void testAddTarget(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         // Add and update
         assertEquals(0, v.addTarget("B", 1));
         assertEquals(1, v.addTarget("B", 2));
@@ -182,7 +182,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     // This test covers sources.size=1, targets.size=1
     @Test
     public void testSingleSourceSingleTargets(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         assertEquals(0, v.addSource("C", 1));
         assertEquals(0, v.addTarget("B", 3));
         String vInfo = "Vertex A: Src: {C=1}, Dst: {B=3}";
@@ -192,7 +192,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     // This test covers sources.size>1, targets.size>1
     @Test
     public void testMultipleSourceMultipleTargets(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         assertEquals(0, v.addSource("B", 1));
         assertEquals(0, v.addSource("C", 2));
         assertEquals(0, v.addTarget("D", 3));
@@ -210,7 +210,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testSources(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         Map<String, Integer> sources = new HashMap<>();
         // Test covers sources.size=0
         assertEquals(sources, v.sources());
@@ -226,7 +226,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
     @Test
     public void testTargets(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         Map<String, Integer> targets = new HashMap<>();
         // Test covers targets.size=0
         assertEquals(targets, v.targets());
@@ -244,7 +244,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     // defensive copies
     @Test
     public void testDefensiveCopies(){
-        Vertex v = new Vertex("A");
+        Vertex<String> v = new Vertex<>("A");
         v.addSource("B", 1);
         v.addSource("C", 2);
         v.addTarget("D", 3);
