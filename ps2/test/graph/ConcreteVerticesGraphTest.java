@@ -64,27 +64,57 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
     }
 
-    //
-    // Testing strategy for graph sources and targets
-    // sources.size: 0, 1, >1
-    // targets.size: 0, 1, >1
-    //
-
-    @Test
-    public void graphSources(){
-        Set<String> vertices = new HashSet<>(Arrays.asList("A", "B"));
-        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
-
-        assertTrue(graph.sources("A").isEmpty());
-        assertTrue(graph.sources("B").isEmpty());
-    }
-
-
     // Testing strategy for ConcreteVerticesGraph.toString()
     //   TODO
     
     // TODO tests for ConcreteVerticesGraph.toString()
-    
+    //
+    // Testing strategy for ConcreteVerticesGraph.toString() -> graphString
+    // vertices.size: 0, >0
+    // edges.size: 0, >0
+    //
+
+    // This test covers vertices.size=0, edges.size=0
+    @Test
+    public void testEmptyConcreteVerticesGraphToString(){
+        ConcreteVerticesGraph graph = new ConcreteVerticesGraph();
+        String graphString = "Vertices graph\n" +
+                "\tVertices: [],\n" +
+                "\tEdges:\n";
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
+
+    // This test covers vertices.size>0, edges.size=0
+    @Test
+    public void testEmptyEdgeConcreteVerticesGraphToString(){
+        Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
+        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        String graphString = "Vertices graph\n" +
+                "\tVertices: [A, B, C],\n" +
+                "\tEdges:\n" +
+                "\tVertex A: Src: {}, Dst: {};\n" +
+                "\tVertex B: Src: {}, Dst: {};\n" +
+                "\tVertex C: Src: {}, Dst: {};\n";
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
+
+    // This test covers vertices.size>0, edges.size>0
+    @Test
+    public void testEdgeConcreteVerticesGraphToString(){
+        Set<String> vertices = new HashSet<>(Arrays.asList("A", "B", "C"));
+        ConcreteVerticesGraph graph = new ConcreteVerticesGraph(vertices);
+        graph.set("A", "B", 2);
+        graph.set("A", "C", 4);
+        graph.set("C", "B", 6);
+        String graphString = "Vertices graph\n" +
+                "\tVertices: [A, B, C],\n" +
+                "\tEdges:\n" +
+                "\tVertex A: Src: {}, Dst: {B=2, C=4};\n" +
+                "\tVertex B: Src: {A=2, C=6}, Dst: {};\n" +
+                "\tVertex C: Src: {A=4}, Dst: {B=6};\n";
+        assertEquals("expect string equality", graphString, graph.toString());
+    }
+
     /*
      * Testing Vertex...
      */

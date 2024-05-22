@@ -147,7 +147,28 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     // TODO toString()
-    
+    /**
+     * A graph could be converted to a string, here is the format
+     * "Vertex graph\n
+     *      Vertices: [A, B, C],\n
+     *      Edges:\n
+     *      vertex A: Src: {B=3, C=4}, Dst: {};\n
+     *      vertex B: Src: {}, Dst: {A=3};\n
+     *      vertex C: Src: {}, Dst: {A=4};\n
+     * "
+     * @return a string that records vertices and edges
+     */
+    @Override public String toString(){
+        String verticesString = this.vertices().toString() + ",\n";
+        List<String> edges = new ArrayList<>();
+        this.vertices.forEach(v -> {
+            edges.add("\t" + v.toString() + ";\n");
+        });
+        return "Vertices graph\n" +
+                "\tVertices: " + verticesString +
+                "\tEdges:\n" +
+                String.join("", edges);
+    }
 }
 
 /**
