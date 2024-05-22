@@ -42,8 +42,6 @@ public abstract class GraphInstanceTest {
     }
 
 
-    
-    // TODO other tests for instance methods of Graph
 
     //
     // Testing strategies for add(vertex) -> result

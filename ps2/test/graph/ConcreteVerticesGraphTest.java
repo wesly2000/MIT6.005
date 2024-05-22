@@ -64,10 +64,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertTrue("expect a vertex set containing \"A\", \"B\", \"C\"", graph.vertices().containsAll(vertices));
     }
 
-    // Testing strategy for ConcreteVerticesGraph.toString()
-    //   TODO
-    
-    // TODO tests for ConcreteVerticesGraph.toString()
+
     //
     // Testing strategy for ConcreteVerticesGraph.toString() -> graphString
     // vertices.size: 0, >0
@@ -118,9 +115,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     /*
      * Testing Vertex...
      */
-    
-    // Testing strategy for Vertex
-    //   TODO
+
     @Test
     public void testVertexConstructor(){
         Vertex v = new Vertex("A");
@@ -131,8 +126,6 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
 
 
-
-    // TODO tests for operations of Vertex
     //
     // Testing strategies for addSource(source, weight) -> result
     //

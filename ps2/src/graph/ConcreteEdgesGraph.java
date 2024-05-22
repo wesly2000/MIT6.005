@@ -23,8 +23,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     // Safety from rep exposure:
     //   All fields are private;
     //   vertices is mutable Set, so vertices() returns defensive copies of the vertices.
-    
-    // TODO constructor
+
     public ConcreteEdgesGraph() {}
 
     public ConcreteEdgesGraph(Set<String> vertices) {
@@ -40,7 +39,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
 //        }
 //    }
     
-    // TODO checkRep
+
     private void checkRep(){
         edges.forEach(Edge::checkRep);
     }
@@ -123,7 +122,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return map;
     }
     
-    // TODO toString()
+
     /**
      * A graph could be converted to a string, here is the format
      * "Edge graph\n
@@ -143,7 +142,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
 }
 
 /**
- * TODO specification
+ *
  * Immutable.
  * This class is internal to the rep of ConcreteEdgesGraph.
  * 
@@ -151,8 +150,6 @@ public class ConcreteEdgesGraph implements Graph<String> {
  * up to you.
  */
 class Edge {
-    
-    // TODO fields
     private final String source;
     private final String target;
     private final int weight;
@@ -166,7 +163,7 @@ class Edge {
     //   source and target are Strings, so are immutable;
     //   weight is int, which is immutable and could be change only through setWeight()
     
-    // TODO constructor
+
     public Edge(String source, String target, int weight) {
         this.source = source;
         this.target = target;
@@ -174,13 +171,11 @@ class Edge {
 
         checkRep();
     }
-    
-    // TODO checkRep
+
     public void checkRep(){
         assert weight > 0: "Illegal weight in edge: " + toString() + ", edge weight should be positive";
     }
-    
-    // TODO methods
+
     public String getSource() { return source; }
     public String getTarget() { return target; }
     public int getWeight() { return weight; }

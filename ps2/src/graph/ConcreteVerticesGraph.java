@@ -15,13 +15,20 @@ public class ConcreteVerticesGraph implements Graph<String> {
     private final List<Vertex> vertices = new ArrayList<>();
     
     // Abstraction function:
-    //   TODO
+    //   a graph represented by this.vertices, each of which possesses a
+    //   sources and targets map representing the inbound and outbound
+    //   edges.
     // Representation invariant:
-    //   TODO
+    //   Rep invariant of ConcreteVerticesGraph includes two points:
+    //   1. Rep invariant of each vertex, i.e., all weights in its
+    //      sources and targets map are positive;
+    //   2. If A.sources contains B with weight w, then B.targets contains A with
+    //      weight w, and vise versa.(inbound/outbound consistence)
     // Safety from rep exposure:
-    //   TODO
-    
-    // TODO constructor
+    //   All fields are private;
+    //   vertices are mutable list, so vertices() only return the label set
+    //   of the vertices, which will not affect this.vertices.
+
     public ConcreteVerticesGraph() {}
 
     public ConcreteVerticesGraph(Set<String> vertices) {
@@ -145,8 +152,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
         Vertex sourceVertex = getVertex(source);
         return sourceVertex.targets();
     }
-    
-    // TODO toString()
+
     /**
      * A graph could be converted to a string, here is the format
      * "Vertex graph\n
@@ -172,7 +178,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
 }
 
 /**
- * TODO specification
  * Mutable.
  * This class is internal to the rep of ConcreteVerticesGraph.
  *
@@ -182,7 +187,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
  * up to you.
  */
 class Vertex {
-    // TODO fields
+
     private String label;
     private Map<String, Integer> sources = new HashMap<>();
     private Map<String, Integer> targets = new HashMap<>();
@@ -198,8 +203,7 @@ class Vertex {
     //   the sources and targets are maps of String and Integer, which
     //   are both immutable. Therefore, a shallow copy of them is defensive
     //   copy.
-    
-    // TODO constructor
+
     public Vertex(String label) { this.label = label; }
     
     // checkRep() checks that every weight in the sources/targets > 0
@@ -214,7 +218,7 @@ class Vertex {
         });
     }
     
-    // TODO methods
+
     public String getLabel() { return label; }
 
     public Map<String, Integer> sources() { return new HashMap<>(sources); }

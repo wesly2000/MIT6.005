@@ -105,11 +105,7 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     /*
      * Testing Edge...
      */
-    
-    // Testing strategy for Edge
-    //   TODO
-    
-    // TODO tests for operations of Edge
+
     // This test covers the creator of Edge
     @Test
     public void testEdgeConstructor(){
