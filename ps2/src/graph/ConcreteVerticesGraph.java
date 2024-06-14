@@ -204,10 +204,10 @@ class Vertex<L> {
     //   are both immutable. Therefore, a shallow copy of them is defensive
     //   copy.
 
-    public Vertex(L label) { this.label = label; }
+    Vertex(L label) { this.label = label; }
     
     // checkRep() checks that every weight in the sources/targets > 0
-    public void checkRep(){
+    void checkRep(){
         // Check for sources
         sources.forEach((k, v) -> {
             assert v > 0: String.format("The weight with %s is %d <= 0", k, v);
@@ -219,11 +219,11 @@ class Vertex<L> {
     }
     
 
-    public L getLabel() { return label; }
+    L getLabel() { return label; }
 
-    public Map<L, Integer> sources() { return new HashMap<>(sources); }
+    Map<L, Integer> sources() { return new HashMap<>(sources); }
 
-    public Map<L, Integer> targets() { return new HashMap<>(targets); }
+    Map<L, Integer> targets() { return new HashMap<>(targets); }
 
     /**
      * Add a source vertex to the vertex with weight, if the source exists
@@ -238,7 +238,7 @@ class Vertex<L> {
      * @return if the source already exists, return the previous weight,
      *          otherwise, return 0
      */
-    public int addSource(L source, int weight) {
+    int addSource(L source, int weight) {
         // Here we follow the traditional get-put workflow to get the boolean return,
         // which could be used directly in set() of graph
         int prevWeight = 0;
@@ -272,7 +272,7 @@ class Vertex<L> {
      * @return if the target already exists, return the previous weight,
      *          otherwise, return 0
      */
-    public int addTarget(L target, int weight) {
+    int addTarget(L target, int weight) {
         int prevWeight = 0;
 
         if(weight > 0){

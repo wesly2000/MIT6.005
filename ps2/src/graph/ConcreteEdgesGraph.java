@@ -164,7 +164,7 @@ class Edge<L> {
     //   weight is int, which is immutable and could be change only through setWeight()
     
 
-    public Edge(L source, L target, int weight) {
+    Edge(L source, L target, int weight) {
         this.source = source;
         this.target = target;
         this.weight = weight;
@@ -172,20 +172,20 @@ class Edge<L> {
         checkRep();
     }
 
-    public void checkRep(){
+    void checkRep(){
         assert weight > 0: "Illegal weight in edge: " + toString() + ", edge weight should be positive";
     }
 
-    public L getSource() { return source; }
-    public L getTarget() { return target; }
-    public int getWeight() { return weight; }
+    L getSource() { return source; }
+    L getTarget() { return target; }
+    int getWeight() { return weight; }
 
     /**
      * An edge could be formated in src->dst: weight
      *
      * @return a string describing an edge
      */
-    public String toString() {
+    @Override public String toString() {
         return (source + "->" + target + ": " + weight).replace("\"", "");
     }
 }
