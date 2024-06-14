@@ -146,12 +146,14 @@ public abstract class GraphInstanceTest {
         graph.set("A", "C", 6);
 
         assertTrue("expect successful removal", graph.remove("B"));
+        assertFalse("expect failure removal", graph.remove("D"));
         assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
         // Test if the edge is removed from the edges
         assertEquals("expect 0 previous weight", 0, graph.set("A", "B", 0));
         assertEquals("expect only \"A\", \"C\" in the vertices", new HashSet<>(Arrays.asList("A", "C")), graph.vertices());
         // Test that the edge A->C(6) is not affected
         assertEquals("expect 6 previous weight", 6, graph.set("A", "C", 2));
+        assertTrue("expect successful removal", graph.remove("A"));
     }
 
 
