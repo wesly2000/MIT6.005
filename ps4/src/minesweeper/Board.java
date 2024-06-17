@@ -118,8 +118,8 @@ public class Board {
      * neighbour should decrease the number of neighbour-with-bomb by 1.
      * 4. sniff(cell)
      *
-     * @param r
-     * @param c
+     * @param r the row of the cell.
+     * @param c the column of the cell.
      * @return if the cell of the given position contains a bomb.
      */
     public boolean dig(int r, int c){
@@ -146,6 +146,40 @@ public class Board {
         }
         sniff(cell);
         return hasBomb;
+    }
+
+    /**
+     * Flag an untouched cell.
+     * @param r the row of the cell.
+     * @param c the column of the cell.
+     */
+    public void flag(int r, int c){
+        Cell cell;
+        try{
+            cell = getCell(r, c);
+        }catch(AssertionError e){
+            return; // Invalid coords
+        }
+        if(getCellState(cell) == Cell.UNTOUCHED){
+            setCellState(cell, Cell.FLAGGED);
+        }
+    }
+
+    /**
+     * Deflag a flagged cell, change it to untouched.
+     * @param r the row of the cell.
+     * @param c the column of the cell.
+     */
+    public void deflag(int r, int c){
+        Cell cell;
+        try{
+            cell = getCell(r, c);
+        }catch(AssertionError e){
+            return; // Invalid coords
+        }
+        if(getCellState(cell) == Cell.FLAGGED){
+            setCellState(cell, Cell.UNTOUCHED);
+        }
     }
 
     @Override public String toString(){

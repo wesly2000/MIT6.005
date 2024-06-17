@@ -141,4 +141,54 @@ public class BoardTest {
                         "- -       \n";
         assertEquals(targetBoardString, board.toString());
     }
+
+    //
+    // Testing strategies for flag(r, c) and deflag(r, c)
+    //
+    // (De)flag place: invalid, (un)touched, (un)flagged.
+    //
+    @Test
+    public void testFlagBoard1(){
+        // The "bomb map" of the board should be
+        // - - - - -
+        // - B B - -
+        // - - - - -
+        // - B - - -
+        // - - - - -
+        Board board = new Board(5, 5, (int r, int c) -> {
+            if((r==1 && c==1) || (r==1 && c==2) || (r==3 && c==1))
+                return Cell.BOMB;
+            return Cell.NOTBOMB;
+        });
+        board.flag(1, 4);
+        assertFalse(board.dig(3, 3));
+        String targetBoardString =
+                        "- - - - - \n" +
+                        "- - - 1 F \n" +
+                        "- - 3 1   \n" +
+                        "- - 1     \n" +
+                        "- - 1     \n";
+        assertEquals(targetBoardString, board.toString());
+
+        assertFalse(board.dig(1, 4)); // This dig should not have any effects.
+        assertEquals(targetBoardString, board.toString());
+
+        board.deflag(1, 4);
+        targetBoardString =
+                        "- - - - - \n" +
+                        "- - - 1 - \n" +
+                        "- - 3 1   \n" +
+                        "- - 1     \n" +
+                        "- - 1     \n";
+        assertEquals(targetBoardString, board.toString());
+
+        assertFalse(board.dig(1, 4));
+        targetBoardString =
+                        "- - - 1   \n" +
+                        "- - - 1   \n" +
+                        "- - 3 1   \n" +
+                        "- - 1     \n" +
+                        "- - 1     \n";
+        assertEquals(targetBoardString, board.toString());
+    }
 }
