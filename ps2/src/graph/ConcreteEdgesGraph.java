@@ -22,7 +22,9 @@ public class ConcreteEdgesGraph<L> implements Graph<L> {
     //   edge weight must be positive
     // Safety from rep exposure:
     //   All fields are private;
-    //   vertices is mutable Set, so vertices() returns defensive copies of the vertices.
+    //   vertices is mutable Set, so vertices() returns defensive copies of the vertices;
+    //   in the constructor with vertices, since L is immutable, therefore the .addAll()
+    //   makes defensive copies of the param, without rep exposure.
 
     public ConcreteEdgesGraph() {}
 

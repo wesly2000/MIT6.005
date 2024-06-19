@@ -27,7 +27,9 @@ public class ConcreteVerticesGraph<L> implements Graph<L> {
     // Safety from rep exposure:
     //   All fields are private;
     //   vertices are mutable list, so vertices() only return the label set
-    //   of the vertices, which will not affect this.vertices.
+    //   of the vertices, which will not affect this.vertices;
+    //   in the constructor with vertices, since L is immutable, therefore the .addAll()
+    //   makes defensive copies of the param, without rep exposure.
 
     public ConcreteVerticesGraph() {}
 
