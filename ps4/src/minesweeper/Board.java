@@ -18,14 +18,31 @@ public class Board {
     //      Represents the game board whose grid is defined as a 2-dim
     //      array of Cells.
     // Representation invariant:
-    //      Each of the cell should be rep invariant
+    //      Each of the cell's state fall in {' ', 'F', '-', '1'-'8'};
+    //      the state of the cell corresponds to the number of its neighbour-with-bomb
     // Safety from rep exposure:
+    //      Row, col and board are private and final;
+    //      only getRow and getCol which return the row and col are exposed
+    //      to the client;
+    //      therefore, the board is guaranteed to be safe from rep exposure.
+    // Thread safety:
+    //      row and col are private and final, board is mutable but never exposed to
+    //      clients;
+    //      all the mutators are synchronized, and for one game there is only one board,
+    //      which implies no dead locks.
     // TODO: Specify, test, and implement in problem 2
     private final int row;
     private final int col;
     private final Cell[][] board;
 
-    Board(int row, int col, BombGenerator generator) {
+    public static final char FLAGGED = 'F';
+    public static final char UNTOUCHED = '-';
+    public static final char ZEROBOMB = ' ';
+
+    public static final boolean BOMB = true;
+    public static final boolean NOTBOMB = false;
+
+    public Board(int row, int col, BombGenerator generator) {
         this.row = row;
         this.col = col;
         board = new Cell[row][col];
@@ -38,7 +55,9 @@ public class Board {
         checkRep();
     }
 
-    Board(int row, int col) { this(row, col, (r, c) -> false); }
+    public int getCol() { return col; }
+
+    public int getRow() { return row; }
 
     // Check if the coordinates are valid, and return the reference to the given cell.
     private Cell getCell(int r, int c){
@@ -81,7 +100,7 @@ public class Board {
     private int neighbourBombCount(Cell cell){
         Set<Cell> neighbours = getNeighbours(cell);
         int count = (int) neighbours.stream()
-                        .filter((neighbour) -> getCellState(neighbour) == Cell.UNTOUCHED && checkCellBomb(neighbour))
+                        .filter((neighbour) -> getCellState(neighbour) == Board.UNTOUCHED && checkCellBomb(neighbour))
                         .count();
         return count;
     }
@@ -89,7 +108,7 @@ public class Board {
     // Set the dug state of a cell, i.e., set its state to ' ' or '1'-'8' according to
     // the number of bombs.
     private void setDug(Cell cell, int count){
-        if (count == 0) setCellState(cell, Cell.ZEROBOMB);
+        if (count == 0) setCellState(cell, Board.ZEROBOMB);
         else
             setCellState(cell, (char)('0' + count));
     }
@@ -105,7 +124,7 @@ public class Board {
 
         if(count == 0){
             for(Cell neighbour : neighbours){
-                if(getCellState(neighbour) == Cell.UNTOUCHED)
+                if(getCellState(neighbour) == Board.UNTOUCHED)
                     sniff(neighbour);
             }
         }
@@ -122,22 +141,22 @@ public class Board {
      * @param c the column of the cell.
      * @return if the cell of the given position contains a bomb.
      */
-    public boolean dig(int r, int c){
+    public synchronized boolean dig(int r, int c){
         Cell cell;
         try{
             cell = getCell(r, c);
         }catch(AssertionError e){
             return false; // Invalid coords
         }
-        if(getCellState(cell) != Cell.UNTOUCHED)
+        if(getCellState(cell) != Board.UNTOUCHED)
             return false;
 
         boolean hasBomb = checkCellBomb(cell);
         if(hasBomb){
-            setCellBomb(cell, Cell.NOTBOMB); // Remove the bomb
+            setCellBomb(cell, Board.NOTBOMB); // Remove the bomb
             Set<Cell> neighbours = getNeighbours(cell);
             for(Cell neighbour : neighbours){
-                if(getCellState(neighbour) != Cell.UNTOUCHED && getCellState(neighbour) != Cell.FLAGGED){
+                if(getCellState(neighbour) != Board.UNTOUCHED && getCellState(neighbour) != Board.FLAGGED){
                     // Decrease the number of neighbouring bombs by 1
                     int prevBombCount = (int)getCellState(neighbour) - '0';
                     setDug(neighbour, prevBombCount - 1);
@@ -145,6 +164,9 @@ public class Board {
             }
         }
         sniff(cell);
+
+        checkRep();
+
         return hasBomb;
     }
 
@@ -153,16 +175,18 @@ public class Board {
      * @param r the row of the cell.
      * @param c the column of the cell.
      */
-    public void flag(int r, int c){
+    public synchronized void flag(int r, int c){
         Cell cell;
         try{
             cell = getCell(r, c);
         }catch(AssertionError e){
             return; // Invalid coords
         }
-        if(getCellState(cell) == Cell.UNTOUCHED){
-            setCellState(cell, Cell.FLAGGED);
+        if(getCellState(cell) == Board.UNTOUCHED){
+            setCellState(cell, Board.FLAGGED);
         }
+
+        checkRep();
     }
 
     /**
@@ -170,23 +194,28 @@ public class Board {
      * @param r the row of the cell.
      * @param c the column of the cell.
      */
-    public void deflag(int r, int c){
+    public synchronized void deflag(int r, int c){
         Cell cell;
         try{
             cell = getCell(r, c);
         }catch(AssertionError e){
             return; // Invalid coords
         }
-        if(getCellState(cell) == Cell.FLAGGED){
-            setCellState(cell, Cell.UNTOUCHED);
+        if(getCellState(cell) == Board.FLAGGED){
+            setCellState(cell, Board.UNTOUCHED);
         }
+
+        checkRep();
     }
 
-    @Override public String toString(){
+    @Override public synchronized String toString(){
         String boardString = "";
         for(int r = 0; r < row; r++){
             for(int c = 0; c < col; c++){
-                boardString += getCellState(getCell(r, c)) + " ";
+                if(c == col - 1){
+                    boardString += getCellState(getCell(r, c));
+                }else
+                    boardString += getCellState(getCell(r, c)) + " ";
             }
             boardString += '\n';
         }
@@ -195,8 +224,22 @@ public class Board {
 
     void checkRep(){
         for (int r = 0; r < row; r++)
-            for (int c = 0; c < col; c++)
-                getCell(r, c).checkRep();
+            for (int c = 0; c < col; c++){
+                Cell cell = getCell(r, c);
+                cell.checkRep();
+                // Check for bomb number and cell state consistency
+                char state = getCellState(cell);
+                if(state != Board.UNTOUCHED && state != Board.FLAGGED){
+                    int bombCount = neighbourBombCount(cell);
+                    if(state == Board.ZEROBOMB){
+                        assert bombCount == 0 :
+                                String.format("Cell (%d, %d) inconsistent state %c and bomb number %d", r, c, state, bombCount);
+                    }else{
+                        assert bombCount == (int) state - '0' :
+                                String.format("Cell (%d, %d) inconsistent state %c and bomb number %d", r, c, state, bombCount);
+                    }
+                }
+            }
     }
 }
 
@@ -209,14 +252,8 @@ class Cell {
     // Safety from rep exposure:
     //      The state is set to private, and it is of primitive type,
     //      thus it is guaranteed immutable.
-    public static final char FLAGGED = 'F';
-    public static final char UNTOUCHED = '-';
-    public static final char ZEROBOMB = ' ';
 
-    public static final boolean BOMB = true;
-    public static final boolean NOTBOMB = false;
-
-    private Set<Character> validStates = new HashSet<>(Arrays.asList(FLAGGED, UNTOUCHED, ZEROBOMB, '1', '2', '3', '4', '5', '6', '7', '8'));
+    private Set<Character> validStates = new HashSet<>(Arrays.asList(Board.FLAGGED, Board.UNTOUCHED, Board.ZEROBOMB, '1', '2', '3', '4', '5', '6', '7', '8'));
 
     private final int r;
     private final int c;
@@ -226,7 +263,7 @@ class Cell {
     Cell(int r, int c, boolean isBomb){
         this.r = r;
         this.c = c;
-        this.state = UNTOUCHED;
+        this.state = Board.UNTOUCHED;
         this.isBomb = isBomb;
     }
 
