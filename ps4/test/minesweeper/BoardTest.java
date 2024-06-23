@@ -28,7 +28,7 @@ public class BoardTest {
     public void testToString() {
         String targetBoardString =  "- - - -\n" +
                                     "- - - -\n" +
-                                    "- - - -\n";
+                                    "- - - -";
         Board board = new Board(3, 4, (r, c) -> false);
         assertEquals(targetBoardString, board.toString());
     }
@@ -48,7 +48,7 @@ public class BoardTest {
                                     "- - - - -\n" +
                                     "- - - - -\n" +
                                     "- - - - -\n" +
-                                    "- - - - -\n";
+                                    "- - - - -";
         assertEquals(targetBoardString, board.toString());
 
         // Digging an invalid position raises no effects.
@@ -63,7 +63,7 @@ public class BoardTest {
                 "- - - 7 -\n" +
                 "- - 7 - -\n" +
                 "- - - - -\n" +
-                "- - - - -\n";
+                "- - - - -";
         assertEquals(targetBoardString, board.toString());
     }
 
@@ -77,7 +77,7 @@ public class BoardTest {
                         "         \n" +
                         "         \n" +
                         "         \n" +
-                        "         \n";
+                        "         ";
         assertEquals(targetBoardString, board.toString());
     }
 
@@ -101,7 +101,7 @@ public class BoardTest {
                 "- - - 1  \n" +
                 "- - 3 1  \n" +
                 "- - 1    \n" +
-                "- - 1    \n";
+                "- - 1    ";
         assertEquals(targetBoardString, board.toString());
 
         assertTrue(board.dig(3, 1));
@@ -110,7 +110,7 @@ public class BoardTest {
                 "- - - 1  \n" +
                 "1 2 2 1  \n" +
                 "         \n" +
-                "         \n";
+                "         ";
         assertEquals(targetBoardString, board.toString());
     }
 
@@ -133,7 +133,7 @@ public class BoardTest {
                         "- - - 1  \n" +
                         "- - 3 1  \n" +
                         "- - 1    \n" +
-                        "- - 1    \n";
+                        "- - 1    ";
         assertEquals(targetBoardString, board.toString());
 
         assertTrue(board.dig(3, 1));
@@ -142,7 +142,7 @@ public class BoardTest {
                         "- - - 1  \n" +
                         "- - 2 1  \n" +
                         "- 1      \n" +
-                        "- -      \n";
+                        "- -      ";
         assertEquals(targetBoardString, board.toString());
     }
 
@@ -213,7 +213,7 @@ public class BoardTest {
                         "- - - 1 F\n" +
                         "- - 3 1  \n" +
                         "- - 1    \n" +
-                        "- - 1    \n";
+                        "- - 1    ";
         assertEquals(targetBoardString, board.toString());
 
         assertFalse(board.dig(1, 4)); // This dig should not have any effects.
@@ -225,7 +225,7 @@ public class BoardTest {
                         "- - - 1 -\n" +
                         "- - 3 1  \n" +
                         "- - 1    \n" +
-                        "- - 1    \n";
+                        "- - 1    ";
         assertEquals(targetBoardString, board.toString());
 
         assertFalse(board.dig(1, 4));
@@ -234,7 +234,7 @@ public class BoardTest {
                         "- - - 1  \n" +
                         "- - 3 1  \n" +
                         "- - 1    \n" +
-                        "- - 1    \n";
+                        "- - 1    ";
         assertEquals(targetBoardString, board.toString());
     }
 }

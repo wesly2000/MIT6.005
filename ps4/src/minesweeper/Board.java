@@ -145,7 +145,7 @@ public class Board {
         Cell cell;
         try{
             cell = getCell(r, c);
-        }catch(AssertionError e){
+        }catch(Exception e){
             return false; // Invalid coords
         }
         if(getCellState(cell) != Board.UNTOUCHED)
@@ -179,7 +179,7 @@ public class Board {
         Cell cell;
         try{
             cell = getCell(r, c);
-        }catch(AssertionError e){
+        }catch(Exception e){
             return; // Invalid coords
         }
         if(getCellState(cell) == Board.UNTOUCHED){
@@ -198,7 +198,7 @@ public class Board {
         Cell cell;
         try{
             cell = getCell(r, c);
-        }catch(AssertionError e){
+        }catch(Exception e){
             return; // Invalid coords
         }
         if(getCellState(cell) == Board.FLAGGED){
@@ -217,7 +217,10 @@ public class Board {
                 }else
                     boardString += getCellState(getCell(r, c)) + " ";
             }
-            boardString += '\n';
+            // Since the requestHandler leverages PrintWriter.println
+            // for the last line we don't need a NEWLINE.
+            if(r != row - 1)
+                boardString += '\n';
         }
         return boardString;
     }

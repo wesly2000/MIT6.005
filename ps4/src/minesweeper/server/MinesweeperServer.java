@@ -6,6 +6,7 @@ package minesweeper.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 import minesweeper.Board;
 
@@ -29,6 +30,10 @@ public class MinesweeperServer {
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
 
+    private final Board board;
+
+    private int currentPlayer = 0;
+
     // TODO: Abstraction function, rep invariant, rep exposure
 
     /**
@@ -36,11 +41,81 @@ public class MinesweeperServer {
      * 
      * @param port port number, requires 0 <= port <= 65535
      * @param debug debug mode flag
+     * @param sizeX the number of columns of the board
+     * @param sizeY the number of rows of the board
      * @throws IOException if an error occurs opening the server socket
      */
-    public MinesweeperServer(int port, boolean debug) throws IOException {
+    public MinesweeperServer(int port, boolean debug, int sizeX, int sizeY, Optional<File> file) throws IOException {
         serverSocket = new ServerSocket(port);
         this.debug = debug;
+
+        if(file.isPresent()) {
+            // read from a board file
+            board = readBoardFromFile(file.get());
+        }else{
+            assert sizeX > 0 && sizeY > 0: "sizeX and sizeY must be positive";
+            // A cell contains a bomb with prob 25%
+            board = new Board(sizeY, sizeX, (r, c) -> Math.random() < .25 ? Board.BOMB : Board.NOTBOMB);
+        }
+    }
+
+    private class Point{
+        final int r, c;
+        Point(int r, int c){ this.r = r; this.c = c; }
+
+        @Override
+        public boolean equals(Object o){
+            if(!(o instanceof Point)){ return false; }
+            Point p = (Point)o;
+            return p.r == r && p.c == c;
+        }
+
+        @Override
+        public int hashCode(){
+            return Objects.hash(r, c);
+        }
+    }
+
+    /**
+     * Generate a new board from a given board file (a text file)
+     * @param file the board file to be read, which should have format below:
+     *      rowNum colNum
+     *      ----------> (colNum)
+     *      | c c c c c
+     *      | c c c c c
+     *      | c c c c c c=0(NOTBOMB), 1(BOMB)
+     *      v
+     *      (rowNum)
+     * @return a board generated from file
+     */
+    private Board readBoardFromFile(File file) throws IOException {
+        Set<Point> bombPoint = new HashSet<>();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+
+        int[] sizes = extractIntegersFromString(br.readLine());
+        int rowNum = sizes[0];
+        int colNum = sizes[1];
+        String line = null;
+        for(int i = 0; i < rowNum; i++){
+            line = br.readLine();
+            int[] cellIsBomb = extractIntegersFromString(line);
+            for(int j = 0; j < colNum; j++)
+                if(cellIsBomb[j] == 1) // Cell i,j contains a bomb
+                    bombPoint.add(new Point(i, j));
+        }
+
+        return new Board(rowNum, colNum, (r, c) -> bombPoint.contains(new Point(r, c)));
+    }
+
+    /**
+     * Extract integers from a string of a single line
+     * @param line the string representing a line
+     * @return the integer array extracted from line
+     */
+    private int[] extractIntegersFromString(String line){
+        return Stream.of(line.split("\\s+"))
+                .mapToInt(Integer::parseInt)
+                .toArray();
     }
 
     /**
@@ -54,6 +129,7 @@ public class MinesweeperServer {
         while (true) {
             // block until a client connects
             Socket socket = serverSocket.accept();
+            currentPlayer++;
 
             // handle the client
             new Thread(
@@ -63,8 +139,12 @@ public class MinesweeperServer {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } finally {
+                            // SOLVED: finally block does not execute
+                            // Adding handler in test to avoid the main thread
+                            // terminates.
                             try{
                                 socket.close();
+                                currentPlayer--;
                             }catch (IOException e){
                                 throw new RuntimeException(e);
                             }
@@ -75,7 +155,7 @@ public class MinesweeperServer {
     }
 
     /**
-     * Handle a single client connection. Returns when client disconnects.
+     * Handle client connections. Returns when client disconnects.
      * 
      * @param socket socket where the client is connected
      * @throws IOException if the connection encounters an error or terminates unexpectedly
@@ -84,15 +164,29 @@ public class MinesweeperServer {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+        // Print hello message once the server accept a connection
+        out.println(String.format("Welcome to Minesweeper. Board: %d columns by %d rows. " +
+                "Players: %d including you. Type 'help' for help.", board.getCol(), board.getRow(), currentPlayer));
+
         try {
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 String output = handleRequest(line);
                 if (output != null) {
                     // TODO: Consider improving spec of handleRequest to avoid use of null
                     out.println(output);
+                    if(output.equals("BOOM!") && !debug)
+                        break;
+                }else{
+                    // Currently, only BYE message returns null;
+                    // and upon receiving BYE, the server disconnects without any return.
+                    // Therefore, we close the socket upon receiving null.
+                    break;
                 }
             }
         } finally {
+            // SOLVED: finally block does not execute
+            // Adding handler in test to avoid the main thread
+            // terminates.
             out.close();
             in.close();
         }
@@ -110,29 +204,55 @@ public class MinesweeperServer {
         if ( ! input.matches(regex)) {
             // invalid input
             // TODO Problem 5
+            return "Invalid command";
         }
         String[] tokens = input.split(" ");
         if (tokens[0].equals("look")) {
             // 'look' request
             // TODO Problem 5
+            return board.toString();
         } else if (tokens[0].equals("help")) {
             // 'help' request
             // TODO Problem 5
+            return  "MESSAGE ::= ( LOOK | DIG | FLAG | DEFLAG | HELP_REQ | BYE ) NEWLINE\n" +
+                    "LOOK ::= \"look\"\n" +
+                    "DIG ::= \"dig\" SPACE X SPACE Y\n" +
+                    "FLAG ::= \"flag\" SPACE X SPACE Y\n" +
+                    "DEFLAG ::= \"deflag\" SPACE X SPACE Y\n" +
+                    "HELP_REQ ::= \"help\"\n" +
+                    "BYE ::= \"bye\"\n" +
+                    "NEWLINE ::= \"\\n\" | \"\\r\" \"\\n\"?\n" +
+                    "X ::= INT\n" +
+                    "Y ::= INT\n" +
+                    "SPACE ::= \" \"\n" +
+                    "INT ::= \"-\"? [0-9]+";
         } else if (tokens[0].equals("bye")) {
             // 'bye' request
             // TODO Problem 5
+            return null;
         } else {
             int x = Integer.parseInt(tokens[1]);
             int y = Integer.parseInt(tokens[2]);
             if (tokens[0].equals("dig")) {
-                // 'dig x y' request
+                // 'dig r y' request
                 // TODO Problem 5
+                // Note that in board data structure,
+                // we use (row, col) rep, where row=y, col=x here.
+                boolean isBomb = board.dig(y, x);
+                if (isBomb)
+                    return "BOOM!";
+                else
+                    return board.toString();
             } else if (tokens[0].equals("flag")) {
-                // 'flag x y' request
+                // 'flag r y' request
                 // TODO Problem 5
+                board.flag(y, x);
+                return board.toString();
             } else if (tokens[0].equals("deflag")) {
-                // 'deflag x y' request
+                // 'deflag r y' request
                 // TODO Problem 5
+                board.deflag(y, x);
+                return board.toString();
             }
         }
         // TODO: Should never get here, make sure to return in each of the cases above
@@ -257,7 +377,7 @@ public class MinesweeperServer {
         
         // TODO: Continue implementation here in problem 4
         
-        MinesweeperServer server = new MinesweeperServer(port, debug);
+        MinesweeperServer server = new MinesweeperServer(port, debug, sizeX, sizeY, file);
         server.serve();
     }
 }
